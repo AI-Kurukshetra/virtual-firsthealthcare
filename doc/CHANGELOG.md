@@ -36,3 +36,4 @@
 - Added profile image support and rebuilt dashboard topbar with dropdown menus and command palette
 - Converted dashboard search to client-side URL updates for global and module search
 - Added Supabase seed script with realistic relational data and expanded schema for full seed coverage
+- Refined seed timelines for 90-day trends, upcoming appointments, reports, and analytics events

@@ -140,6 +140,16 @@ function randomDateWithin(days: number) {
   return new Date(now.getTime() - offset);
 }
 
+function randomDateBetween(daysFromNowStart: number, daysFromNowEnd: number) {
+  const now = new Date();
+  const start = now.getTime() + daysFromNowStart * 24 * 60 * 60 * 1000;
+  const end = now.getTime() + daysFromNowEnd * 24 * 60 * 60 * 1000;
+  const min = Math.min(start, end);
+  const max = Math.max(start, end);
+  const offset = Math.floor(Math.random() * (max - min));
+  return new Date(min + offset);
+}
+
 function toIso(date: Date) {
   return date.toISOString();
 }
@@ -150,8 +160,10 @@ function toDateString(date: Date) {
 
 async function clearData() {
   const tables: { name: string; filterColumn: string }[] = [
+    { name: "analytics_events", filterColumn: "id" },
     { name: "audit_logs", filterColumn: "id" },
     { name: "payments", filterColumn: "id" },
+    { name: "claims", filterColumn: "id" },
     { name: "invoices", filterColumn: "id" },
     { name: "notifications", filterColumn: "id" },
     { name: "messages", filterColumn: "id" },
@@ -159,12 +171,18 @@ async function clearData() {
     { name: "conversations", filterColumn: "id" },
     { name: "files", filterColumn: "id" },
     { name: "documents", filterColumn: "id" },
+    { name: "lab_results", filterColumn: "id" },
+    { name: "lab_orders", filterColumn: "id" },
     { name: "appointment_rooms", filterColumn: "id" },
     { name: "appointments", filterColumn: "id" },
     { name: "prescriptions", filterColumn: "id" },
     { name: "allergies", filterColumn: "id" },
     { name: "medications", filterColumn: "id" },
     { name: "medical_records", filterColumn: "id" },
+    { name: "vital_signs", filterColumn: "id" },
+    { name: "diagnoses", filterColumn: "id" },
+    { name: "procedures", filterColumn: "id" },
+    { name: "insurance_plans", filterColumn: "id" },
     { name: "provider_availability", filterColumn: "id" },
     { name: "providers", filterColumn: "id" },
     { name: "patients", filterColumn: "id" },
@@ -267,7 +285,7 @@ async function seed() {
     full_name: user.full_name,
     email: user.email,
     phone: `+1-555-01${String(100 + index).slice(-3)}`,
-    created_at: toIso(randomDateWithin(45)),
+    created_at: toIso(randomDateWithin(90)),
     profile_image: `https://cdn.${SEED_DOMAIN}/avatars/${index + 1}.jpg`,
     avatar_url: `https://cdn.${SEED_DOMAIN}/avatars/${index + 1}.jpg`
   }));
@@ -297,7 +315,7 @@ async function seed() {
         years_of_experience: 4 + (index % 18),
         bio: `Board-certified ${specialties[index % specialties.length]} specialist focused on virtual-first care delivery.`,
         clinic_name: clinics[index % clinics.length],
-        created_at: toIso(randomDateWithin(60))
+        created_at: toIso(randomDateWithin(90))
       }))
     )
     .select("id, user_id");
@@ -316,7 +334,7 @@ async function seed() {
         emergency_contact: `+1-408-555-${String(2000 + index).slice(-4)}`,
         phone: `+1-202-555-${String(1000 + index).slice(-4)}`,
         address: `${200 + index} Market Street, San Francisco, CA`,
-        created_at: toIso(randomDateWithin(60))
+        created_at: toIso(randomDateWithin(90))
       }))
     )
     .select("id, user_id");
@@ -329,7 +347,7 @@ async function seed() {
     allergen: rand(allergens),
     reaction: rand(["Rash", "Hives", "Shortness of breath", "Swelling"]),
     severity: rand(["mild", "moderate", "severe"]),
-    created_at: toIso(randomDateWithin(365))
+    created_at: toIso(randomDateWithin(90))
   }));
 
   await supabase.from("allergies").insert(allergyRows);
@@ -354,29 +372,54 @@ async function seed() {
   if (medsError || !meds) throw medsError;
 
   const appointments = [] as any[];
+  const patientAssignments = new Map<string, string[]>();
 
-  for (let i = 0; i < patients.length; i += 1) {
-    const provider = providers[i % providers.length];
-    const scheduled = randomDateWithin(25);
-    appointments.push({
-      organization_id: organizationId,
-      patient_id: patients[i].id,
-      provider_id: provider.id,
-      scheduled_at: toIso(scheduled),
-      appointment_type: rand(appointmentTypes),
-      status: rand(["scheduled", "completed", "cancelled"]),
-      reason: rand(appointmentReasons)
+  providers.forEach((provider, index) => {
+    const assigned = patients
+      .filter((_, patientIndex) => patientIndex % providers.length === index)
+      .map((patient) => patient.id);
+    patientAssignments.set(provider.id, assigned);
+  });
+
+  for (const provider of providers) {
+    const assignedPatients = patientAssignments.get(provider.id) ?? [];
+    const selected = assignedPatients.slice(0, 3);
+
+    selected.forEach((patientId) => {
+      appointments.push({
+        organization_id: organizationId,
+        patient_id: patientId,
+        provider_id: provider.id,
+        scheduled_at: toIso(randomDateBetween(1, 14)),
+        appointment_type: rand(appointmentTypes),
+        status: "scheduled",
+        reason: rand(appointmentReasons)
+      });
     });
   }
 
-  while (appointments.length < 45) {
-    const provider = rand(providers);
-    const patient = rand(patients);
+  for (const patient of patients) {
+    const provider = providers[patients.indexOf(patient) % providers.length];
     appointments.push({
       organization_id: organizationId,
       patient_id: patient.id,
       provider_id: provider.id,
-      scheduled_at: toIso(randomDateWithin(30)),
+      scheduled_at: toIso(randomDateBetween(-90, -3)),
+      appointment_type: rand(appointmentTypes),
+      status: rand(["completed", "cancelled"]),
+      reason: rand(appointmentReasons)
+    });
+  }
+
+  while (appointments.length < 50) {
+    const provider = rand(providers);
+    const assigned = patientAssignments.get(provider.id) ?? [];
+    const patientId = rand(assigned.length ? assigned : patients.map((p) => p.id));
+    appointments.push({
+      organization_id: organizationId,
+      patient_id: patientId,
+      provider_id: provider.id,
+      scheduled_at: toIso(randomDateBetween(-90, 14)),
       appointment_type: rand(appointmentTypes),
       status: rand(["scheduled", "completed", "cancelled"]),
       reason: rand(appointmentReasons)
@@ -395,8 +438,8 @@ async function seed() {
     appointment_id: appointment.id,
     room_token: `room_${appointment.id.slice(0, 8)}`,
     status: rand(["ready", "live", "ended"]),
-    started_at: toIso(randomDateWithin(10)),
-    ended_at: toIso(randomDateWithin(5))
+    started_at: toIso(randomDateBetween(-7, 7)),
+    ended_at: toIso(randomDateBetween(-6, 8))
   }));
 
   await supabase.from("appointment_rooms").insert(roomRows);
@@ -408,30 +451,39 @@ async function seed() {
 
   await supabase.from("medical_records").insert(medicalRecords);
 
-  const prescriptions = patients.slice(0, 30).map((patient, index) => ({
+  const prescriptions = patients.map((patient, index) => ({
     organization_id: organizationId,
     patient_id: patient.id,
     provider_id: providers[index % providers.length].id,
     medication_id: meds[index % meds.length].id,
     dosage: "1 tablet",
     frequency: rand(["once daily", "twice daily", "every 8 hours"]),
-    start_date: toDateString(randomDateWithin(90)),
-    end_date: toDateString(randomDateWithin(10))
+    start_date: toDateString(randomDateBetween(-90, -10)),
+    end_date: toDateString(randomDateBetween(5, 60))
   }));
 
   await supabase.from("prescriptions").insert(prescriptions);
 
-  const documents = Array.from({ length: 25 }).map((_, index) => {
+  const documents = patients.map((patient, index) => ({
+    organization_id: organizationId,
+    patient_id: patient.id,
+    title: `Patient Report #${index + 1}`,
+    document_type: "Lab Report",
+    uploaded_at: toIso(randomDateBetween(-90, -1)),
+    created_at: toIso(randomDateBetween(-90, -1))
+  }));
+
+  while (documents.length < 55) {
     const patient = rand(patients);
-    return {
+    documents.push({
       organization_id: organizationId,
       patient_id: patient.id,
-      title: `${rand(documentTypes)} #${index + 1}`,
+      title: `${rand(documentTypes)} #${documents.length + 1}`,
       document_type: rand(documentTypes),
-      uploaded_at: toIso(randomDateWithin(90)),
-      created_at: toIso(randomDateWithin(90))
-    };
-  });
+      uploaded_at: toIso(randomDateBetween(-90, -1)),
+      created_at: toIso(randomDateBetween(-90, -1))
+    });
+  }
 
   const { data: createdDocs } = await supabase.from("documents").insert(documents).select("id");
 
@@ -443,7 +495,7 @@ async function seed() {
       mime_type: "application/pdf",
       file_name: `document-${index + 1}.pdf`,
       file_type: "pdf",
-      bucket: rand(["documents", "reports"])
+      bucket: index < patients.length ? "reports" : rand(["documents", "reports"])
     }));
     await supabase.from("files").insert(fileRows);
   }
@@ -486,9 +538,8 @@ async function seed() {
     await supabase.from("messages").insert(messages);
   }
 
-  const notifications = Array.from({ length: 40 }).map((_, index) => {
-    const user = rand(allUsers);
-    const isRead = index % 3 !== 0;
+  const notifications = allUsers.map((user, index) => {
+    const isRead = index % 4 !== 0;
     return {
       organization_id: organizationId,
       user_id: user.id,
@@ -496,10 +547,25 @@ async function seed() {
       body: rand(["Please check your dashboard.", "Action required.", "Update completed."]),
       type: rand(["info", "alert", "success"]),
       is_read: isRead,
-      read_at: isRead ? toIso(randomDateWithin(7)) : null,
-      created_at: toIso(randomDateWithin(30))
+      read_at: isRead ? toIso(randomDateBetween(-7, -1)) : null,
+      created_at: toIso(randomDateBetween(-7, 0))
     };
   });
+
+  while (notifications.length < 60) {
+    const user = rand(allUsers);
+    const isRead = Math.random() > 0.3;
+    notifications.push({
+      organization_id: organizationId,
+      user_id: user.id,
+      title: rand(["Appointment update", "New message", "Lab results ready", "Billing notice"]),
+      body: rand(["Please check your dashboard.", "Action required.", "Update completed."]),
+      type: rand(["info", "alert", "success"]),
+      is_read: isRead,
+      read_at: isRead ? toIso(randomDateBetween(-7, -1)) : null,
+      created_at: toIso(randomDateBetween(-30, 0))
+    });
+  }
 
   await supabase.from("notifications").insert(notifications);
 
@@ -516,8 +582,8 @@ async function seed() {
       total: 120 + index * 5,
       currency: "USD",
       payment_method: rand(paymentMethods),
-      due_date: toDateString(randomDateWithin(60)),
-      created_at: toIso(randomDateWithin(90))
+      due_date: toDateString(randomDateBetween(-30, 30)),
+      created_at: toIso(randomDateBetween(-90, -1))
     };
   });
 
@@ -554,11 +620,24 @@ async function seed() {
         ]),
         index
       },
-      created_at: toIso(randomDateWithin(30))
+      created_at: toIso(randomDateBetween(-90, 0))
     };
   });
 
   await supabase.from("audit_logs").insert(auditLogs);
+
+  const analyticsEvents = Array.from({ length: 120 }).map((_, index) => ({
+    organization_id: organizationId,
+    user_id: rand(allUsers).id,
+    event_name: rand(["dashboard_view", "appointment_booked", "message_sent", "record_updated"]),
+    metadata: {
+      day: index,
+      source: rand(["web", "mobile", "api"])
+    },
+    created_at: toIso(randomDateBetween(-90, 0))
+  }));
+
+  await supabase.from("analytics_events").insert(analyticsEvents);
 
   const summary = {
     users: allUsers.length,
@@ -569,9 +648,10 @@ async function seed() {
     allergies: allergyRows.length,
     documents: createdDocs?.length ?? 0,
     messages: 40,
-    notifications: 40,
+    notifications: notifications.length,
     invoices: createdInvoices?.length ?? 0,
-    audit_logs: 50
+    audit_logs: auditLogs.length,
+    analytics_events: analyticsEvents.length
   };
 
   console.log("Seed complete:", summary);

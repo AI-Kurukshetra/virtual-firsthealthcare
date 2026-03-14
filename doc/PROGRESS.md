@@ -33,3 +33,4 @@
 [2026-03-14 17:06] coordinator — expanded schema for seed fields and updated seed script for full dataset coverage
 [2026-03-14 17:08] coordinator — applied profile field expansion migration; seed run blocked by missing env vars
 [2026-03-14 17:12] coordinator — loaded env from .env.local and ran seed successfully
+[2026-03-14 17:15] coordinator — improved seed realism with 90-day timelines, upcoming appointments, and analytics events
