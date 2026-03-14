@@ -29,3 +29,4 @@
 - Scoped users RLS to org, added org validation on appointments/messaging, and enforced upload size limits
 - Added flat ESLint config for Next 16, normalized role extraction, and typed Supabase relation selects
 - Hardened appointment RLS to block provider self-assignment and tightened provider-side appointment actions
+- Replaced patient/provider dashboard redirect loops with a missing-profile state

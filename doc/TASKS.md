@@ -24,3 +24,4 @@
 - [x] 2026-03-14 15:01 Full system audit fixes (users RLS, appointment validation, messaging org check, upload limits)
 - [x] 2026-03-14 15:19 Fix ESLint config, resolve TS relation typing, and run tests
 - [x] 2026-03-14 15:28 Harden appointment RLS and provider appointment actions
+- [x] 2026-03-14 15:57 Fix patient/provider dashboard redirect loop when profile missing

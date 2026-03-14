@@ -22,3 +22,4 @@
 [2026-03-14 15:01] coordinator — completed system audit fixes (users RLS org scope, appointment org checks, messaging org validation, upload size limits)
 [2026-03-14 15:19] coordinator — updated ESLint config, resolved TS relation typing, and ran lint/typecheck/tests
 [2026-03-14 15:28] coordinator — hardened appointment RLS against provider self-assignment and tightened provider appointment actions
+[2026-03-14 15:57] coordinator — prevented dashboard redirect loops by rendering missing profile state

@@ -3,6 +3,7 @@ import { CalendarClock, FileText, Pill } from "lucide-react";
 
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { MetricCard } from "@/components/dashboard/MetricCard";
+import { AuthFeedback } from "@/components/forms/AuthFeedback";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUserContext } from "@/lib/auth/user-context";
 
@@ -38,7 +39,11 @@ export default async function PatientDashboardPage() {
 
   const patientId = context.patientId;
   if (!patientId) {
-    redirect("/dashboard");
+    return (
+      <DashboardShell title="Patient dashboard" description="Your care summary">
+        <AuthFeedback message="Patient profile not found. Please contact support or your administrator." />
+      </DashboardShell>
+    );
   }
 
   const supabase = context.supabase;
