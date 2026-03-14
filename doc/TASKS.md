@@ -1,0 +1,26 @@
+# TASKS
+
+- [x] 2026-03-14 11:41 Scaffold Next.js app structure and core config
+- [x] 2026-03-14 11:41 Implement auth + dashboard UI shells and example pages
+- [x] 2026-03-14 11:41 Add Supabase schema migration with RLS policies
+- [x] 2026-03-14 11:41 Add SQL seeders for sample org, users, and clinical data
+- [x] 2026-03-14 11:41 Write platform documentation (README + docs/*)
+- [x] 2026-03-14 11:48 Upgrade to Next.js 16 and switch to npm
+- [x] 2026-03-14 12:41 Fix auth login/register flow with Supabase server actions
+- [x] 2026-03-14 12:53 Add logout and profile management
+- [x] 2026-03-14 13:47 Add auth cross-links and tray profile/logout links
+- [x] 2026-03-14 13:55 Display logged-in user name/role in topbar
+- [x] 2026-03-14 13:59 Enforce user_roles-backed role display and add roles RLS policies
+- [x] 2026-03-14 14:06 Apply Supabase migrations (roles RLS policies)
+- [x] 2026-03-14 14:27 Implement CRUD flows, search, pagination, and RLS fixes for core modules
+- [x] 2026-03-14 14:29 Tighten users/providers visibility policies and apply migrations
+- [x] 2026-03-14 14:35 Review CRUD actions, fix validation, search, and RLS update checks
+- [x] 2026-03-14 14:44 Audit RBAC and tighten UI guards + prescription policy
+- [x] 2026-03-14 14:45 Allow admin message insert and apply RLS migration
+- [x] 2026-03-14 14:53 Add role-based dashboards, redirect logic, and profiles view
+- [x] 2026-03-14 14:55 Add role-aware sidebar navigation
+- [x] 2026-03-14 14:56 Hide messaging/notifications links for providers and patients
+- [x] 2026-03-14 14:58 Re-enable messaging link for provider/patient roles
+- [x] 2026-03-14 15:01 Full system audit fixes (users RLS, appointment validation, messaging org check, upload limits)
+- [x] 2026-03-14 15:19 Fix ESLint config, resolve TS relation typing, and run tests
+- [x] 2026-03-14 15:28 Harden appointment RLS and provider appointment actions

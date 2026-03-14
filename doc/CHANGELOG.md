@@ -1,0 +1,31 @@
+# CHANGELOG
+
+## 2026-03-14
+- Added Next.js app scaffold with Tailwind, Supabase, and AWS S3 utilities
+- Implemented auth + dashboard layouts and example pages
+- Added Supabase migration for multi-tenant healthcare schema with RLS
+- Added seed data SQL and platform docs
+- Mirrored database migrations/seeders into `supabase/` for CLI compatibility
+- Upgraded to Next.js 16 and switched package manager to npm
+- Next.js auto-updated `tsconfig.json` for v16 tooling
+- Added Supabase auth server actions, admin client, and auth feedback UI
+- Added profile update form and logout action
+- Added register/login cross-links and profile/logout tray line in topbar
+- Wired topbar to display the logged-in user's name and role
+- Enforced user_roles-backed role display and added roles RLS policies
+- Added role-based CRUD RLS policies, conversation members, and files bucket tracking
+- Tightened users/providers visibility to assigned relationships
+- Implemented CRUD server actions, validations, and UI flows for patients, providers, appointments, medical records, prescriptions, documents, messaging, and notifications
+- Added search, pagination, and dashboard loading state
+- Added document storage upload support with bucket selection and signed downloads
+- Fixed ActionForm server action wiring, tightened CRUD validations, and added WITH CHECK to update policies
+- Tightened RBAC in module pages and expanded prescription visibility for assigned providers
+- Allowed admins to insert messages without requiring membership
+- Added profiles view and role-based dashboard routes with redirect guards
+- Populated admin/provider/patient dashboards with live data and tightened role-scoped actions
+- Added role-aware sidebar navigation
+- Hid messaging/notifications navigation for provider and patient roles
+- Re-enabled messaging navigation for provider and patient roles
+- Scoped users RLS to org, added org validation on appointments/messaging, and enforced upload size limits
+- Added flat ESLint config for Next 16, normalized role extraction, and typed Supabase relation selects
+- Hardened appointment RLS to block provider self-assignment and tightened provider-side appointment actions

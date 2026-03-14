@@ -1,0 +1,26 @@
+# SCHEMA
+
+## 2026-03-14
+- Initial healthcare schema with multi-tenant tables, enums, and RLS policies.
+- Tables include organizations, users, roles, permissions, clinical data, messaging, billing, analytics, and audit logs.
+- See `database/migrations/20260314000000_init.sql` for full DDL.
+- Added RLS policies to allow authenticated users to read their own `user_roles` and corresponding `roles`.
+- See `supabase/migrations/20260314135942_roles_rls_policies.sql` and `database/migrations/20260314135942_roles_rls_policies.sql` for policy definitions.
+- Added conversation membership table and refined RLS policies for role-based CRUD access (patients, providers, appointments, medical records, prescriptions, documents, files, messaging, notifications, medications).
+- See `supabase/migrations/20260314141150_access_policies.sql` and `database/migrations/20260314141150_access_policies.sql` for details.
+- Added `files.bucket` to track storage buckets for documents/reports.
+- See `supabase/migrations/20260314142530_files_bucket.sql` and `database/migrations/20260314142530_files_bucket.sql`.
+- Tightened `users` and `providers` select policies to restrict visibility to assigned relationships.
+- See `supabase/migrations/20260314142844_users_providers_access.sql` and `database/migrations/20260314142844_users_providers_access.sql`.
+- Added `WITH CHECK` to update policies for role-safe row changes.
+- See `supabase/migrations/20260314143427_update_with_check.sql` and `database/migrations/20260314143427_update_with_check.sql`.
+- Extended prescription select policy to include providers assigned to the patient.
+- See `supabase/migrations/20260314144320_prescriptions_select.sql` and `database/migrations/20260314144320_prescriptions_select.sql`.
+- Allowed admins to insert messages without conversation membership.
+- See `supabase/migrations/20260314144446_messages_admin_insert.sql` and `database/migrations/20260314144446_messages_admin_insert.sql`.
+- Added `profiles` view to surface user role for redirects.
+- See `supabase/migrations/20260314144907_profiles_view.sql` and `database/migrations/20260314144907_profiles_view.sql`.
+- Scoped `users` select policy to the current organization.
+- See `supabase/migrations/20260314150026_users_select_org.sql` and `database/migrations/20260314150026_users_select_org.sql`.
+- Hardened appointment insert/update policies to enforce org membership and prevent provider self-assignment.
+- See `supabase/migrations/20260314153000_appointments_rls_hardening.sql` and `database/migrations/20260314153000_appointments_rls_hardening.sql`.
