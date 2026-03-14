@@ -30,3 +30,5 @@
 - [x] 2026-03-14 16:31 Fix RLS recursion causing stack depth limit exceeded
 - [x] 2026-03-14 16:44 Redesign dashboard topbar with dropdowns and command palette
 - [x] 2026-03-14 16:51 Replace module and global search with client-side navigation
+- [x] 2026-03-14 17:01 Add Supabase seed script with realistic relational data
+- [x] 2026-03-14 17:06 Expand schema to support full seed requirements

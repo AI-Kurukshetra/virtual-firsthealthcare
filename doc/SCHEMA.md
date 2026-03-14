@@ -28,3 +28,5 @@
 - See `supabase/migrations/20260314163000_security_definer_helpers.sql` and `database/migrations/20260314163000_security_definer_helpers.sql`.
 - Added `profile_image` to `users` and exposed it in the `profiles` view.
 - See `supabase/migrations/20260314170000_profiles_avatar.sql` and `database/migrations/20260314170000_profiles_avatar.sql`.
+- Expanded user, provider, patient, appointment, document, message, notification, invoice, and telehealth fields for richer seed data.
+- See `supabase/migrations/20260314173000_profile_fields_expansion.sql` and `database/migrations/20260314173000_profile_fields_expansion.sql`.

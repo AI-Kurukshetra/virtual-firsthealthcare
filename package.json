@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.755.0",
@@ -41,11 +42,13 @@
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "autoprefixer": "^10.4.20",
+    "dotenv": "^17.3.1",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.0.0",
     "postcss": "^8.5.3",
     "supabase": "^2.78.1",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.3",
     "vitest": "^1.6.0"
   }

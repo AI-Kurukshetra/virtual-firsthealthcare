@@ -30,3 +30,6 @@
 [2026-03-14 16:44] coordinator — rebuilt topbar with profile/notification dropdowns, command palette, and avatar support
 [2026-03-14 16:47] coordinator — applied profiles avatar migrations to Supabase
 [2026-03-14 16:51] coordinator — implemented client-side search bar for global and module queries
+[2026-03-14 17:06] coordinator — expanded schema for seed fields and updated seed script for full dataset coverage
+[2026-03-14 17:08] coordinator — applied profile field expansion migration; seed run blocked by missing env vars
+[2026-03-14 17:12] coordinator — loaded env from .env.local and ran seed successfully
