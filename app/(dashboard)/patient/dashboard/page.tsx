@@ -27,8 +27,11 @@ type PrescriptionRow = {
 
 type ReportRow = {
   id: string;
-  bucket: string | null;
-  documents: { title: string | null; created_at: string | null } | null;
+  title: string | null;
+  created_at: string | null;
+  files:
+    | { id: string; bucket: string | null; s3_key: string | null }[]
+    | null;
 };
 
 type MessageRow = {
@@ -73,9 +76,10 @@ export default async function PatientDashboardPage() {
     .returns<PrescriptionRow[]>();
 
   const { data: reports } = await supabase
-    .from("files")
-    .select("id, bucket, documents(title, created_at)")
-    .eq("bucket", "reports")
+    .from("documents")
+    .select("id, title, created_at, files(id, bucket, s3_key)")
+    .eq("patient_id", patientId)
+    .eq("files.bucket", "reports")
     .order("created_at", { ascending: false })
     .limit(5)
     .returns<ReportRow[]>();
@@ -175,10 +179,10 @@ export default async function PatientDashboardPage() {
             ) : (
               reports?.map((report) => (
                 <div key={report.id} className="flex items-center justify-between">
-                  <span>{report.documents?.title ?? "Report"}</span>
+                  <span>{report.title ?? "Report"}</span>
                   <span className="text-foreground/40">
-                    {report.documents?.created_at
-                      ? new Date(report.documents.created_at).toLocaleDateString()
+                    {report.created_at
+                      ? new Date(report.created_at).toLocaleDateString()
                       : ""}
                   </span>
                 </div>

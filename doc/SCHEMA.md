@@ -32,3 +32,5 @@
 - See `supabase/migrations/20260314173000_profile_fields_expansion.sql` and `database/migrations/20260314173000_profile_fields_expansion.sql`.
 - Added RLS policies for `appointment_rooms`, `invoices`, and `payments` to support telehealth sessions and billing dashboards.
 - See `supabase/migrations/20260314183000_telehealth_billing_policies.sql`.
+- Tightened prescription write policies to require providers be assigned to the patient.
+- See `supabase/migrations/20260314191500_prescriptions_assignment_policy.sql`.

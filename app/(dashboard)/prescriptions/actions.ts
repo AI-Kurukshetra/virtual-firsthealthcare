@@ -63,6 +63,21 @@ async function getOrCreateMedicationId(supabase: SupabaseClient, name: string) {
   return created.id as string;
 }
 
+async function isProviderAssignedToPatient(
+  supabase: SupabaseClient,
+  patientId: string,
+  providerId: string
+) {
+  const { data } = await supabase
+    .from("appointments")
+    .select("id")
+    .eq("patient_id", patientId)
+    .eq("provider_id", providerId)
+    .maybeSingle();
+
+  return Boolean(data?.id);
+}
+
 export async function createPrescriptionAction(formData: FormData) {
   const parsed = prescriptionCreateSchema.safeParse(parsePrescriptionCreate(formData));
   if (!parsed.success) {
@@ -85,6 +100,17 @@ export async function createPrescriptionAction(formData: FormData) {
 
   if (!providerId) {
     return { error: "Missing provider." };
+  }
+
+  if (context.role === "provider") {
+    const assigned = await isProviderAssignedToPatient(
+      context.supabase,
+      parsed.data.patientId,
+      providerId
+    );
+    if (!assigned) {
+      return { error: "Providers can only prescribe for assigned patients." };
+    }
   }
 
   try {
@@ -150,6 +176,17 @@ export async function updatePrescriptionAction(formData: FormData) {
 
   if (!providerId) {
     return { error: "Missing provider." };
+  }
+
+  if (context.role === "provider") {
+    const assigned = await isProviderAssignedToPatient(
+      context.supabase,
+      parsed.data.patientId,
+      providerId
+    );
+    if (!assigned) {
+      return { error: "Providers can only prescribe for assigned patients." };
+    }
   }
 
   try {

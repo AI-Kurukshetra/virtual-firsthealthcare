@@ -21,6 +21,7 @@ type AppointmentRow = {
 type PatientRow = {
   id: string;
   users: { full_name: string | null; email: string | null } | null;
+  appointments?: { id: string }[] | null;
 };
 
 type RecordRow = {
@@ -77,12 +78,21 @@ export default async function ProviderDashboardPage() {
     .order("scheduled_at", { ascending: true })
     .returns<AppointmentRow[]>();
 
-  const { data: patients } = await supabase
+  const { data: rawPatients } = await supabase
     .from("patients")
-    .select("id, users(full_name, email)")
+    .select("id, users(full_name, email), appointments!inner(id)")
+    .eq("appointments.provider_id", providerId)
     .order("created_at", { ascending: false })
-    .limit(6)
+    .limit(12)
     .returns<PatientRow[]>();
+
+  const patientsMap = new Map<string, PatientRow>();
+  (rawPatients ?? []).forEach((patient) => {
+    if (!patientsMap.has(patient.id)) {
+      patientsMap.set(patient.id, patient);
+    }
+  });
+  const patients = Array.from(patientsMap.values()).slice(0, 6);
 
   const { data: recentRecords } = await supabase
     .from("medical_records")

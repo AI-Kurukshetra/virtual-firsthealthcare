@@ -42,3 +42,7 @@
 - Wired notifications for appointments, prescriptions, messages, and document uploads
 - Added password reset flow, admin/provider/patient dashboard data updates, and live chart data
 - Hardened RLS for appointment rooms/invoices/payments and extended document metadata support
+- Tightened prescriptions RBAC with provider assignment checks in RLS and server actions
+- Added middleware role guard redirects for /admin, /provider, and /patient routes
+- Scoped provider dashboard patient list to provider appointments and deduped results
+- Updated patient dashboard reports to pull patient-specific report documents

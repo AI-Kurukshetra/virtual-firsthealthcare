@@ -36,3 +36,13 @@
 [2026-03-14 17:15] coordinator — improved seed realism with 90-day timelines, upcoming appointments, and analytics events
 [2026-03-14 17:23] coordinator — added class-based theming with next-themes, theme tokens, and dashboard toggle
 [2026-03-14 17:55] coordinator — completed production audit fixes: users/billing/telehealth/reports modules, filters, notifications, dashboards, and reset password
+
+[2026-03-14 18:27] coordinator — set Vercel env vars (Supabase) and deployed to production
+
+[2026-03-14 18:40] coordinator — ran production smoke checks for admin/provider/patient RBAC and dashboards on Vercel
+
+[2026-03-14 19:18] coordinator — audited RBAC; tightened prescriptions RLS/actions and added middleware role guards
+
+[2026-03-14 19:30] coordinator — applied prescriptions RLS migration to Supabase and ran RBAC smoke tests (admin/provider/patient)
+
+[2026-03-14 19:47] coordinator — tightened provider/patient dashboard queries for assigned patients and reports

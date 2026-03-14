@@ -34,3 +34,5 @@
 - [x] 2026-03-14 17:06 Expand schema to support full seed requirements
 - [x] 2026-03-14 17:23 Add full light/dark/system theming with next-themes, tokenized colors, and dashboard toggle
 - [x] 2026-03-14 17:55 Production hardening audit: users/billing/telehealth/reports modules, filters, notifications, charts, and reset password
+- [x] 2026-03-14 19:15 Audit RBAC and tighten prescriptions policies + middleware role guards
+- [x] 2026-03-14 19:45 Fix dashboard data queries for provider/patient views

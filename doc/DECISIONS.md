@@ -18,3 +18,5 @@
 - Standardized theme styling on CSS variables + Tailwind tokens and used `next-themes` class mode for light/dark/system support.
 - Modeled telehealth sessions using `appointment_rooms` with status and timestamps, adding RLS policies instead of introducing a new table.
 - Added invoice + payment RLS to keep billing charts/CRUD scoped to role and organization.
+- Tightened prescription writes to require provider assignment for the patient to prevent providers from prescribing outside their care relationships.
+- Added middleware role guards for `/admin`, `/provider`, and `/patient` routes to enforce early redirects in addition to layout checks.
