@@ -23,3 +23,10 @@
 [2026-03-14 15:19] coordinator — updated ESLint config, resolved TS relation typing, and ran lint/typecheck/tests
 [2026-03-14 15:28] coordinator — hardened appointment RLS against provider self-assignment and tightened provider appointment actions
 [2026-03-14 15:57] coordinator — prevented dashboard redirect loops by rendering missing profile state
+[2026-03-14 16:16] coordinator — redesigned public landing page with SaaS sections and animated stats
+[2026-03-14 16:21] coordinator — added hero preview SVG asset and reran lint/typecheck
+[2026-03-14 16:31] coordinator — hardened helper functions as security definer to avoid RLS recursion
+[2026-03-14 16:32] coordinator — applied RLS helper function migration to Supabase
+[2026-03-14 16:44] coordinator — rebuilt topbar with profile/notification dropdowns, command palette, and avatar support
+[2026-03-14 16:47] coordinator — applied profiles avatar migrations to Supabase
+[2026-03-14 16:51] coordinator — implemented client-side search bar for global and module queries

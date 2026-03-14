@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { AuthFeedback } from "@/components/forms/AuthFeedback";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { Pagination } from "@/components/common/Pagination";
+import { SearchBar } from "@/components/common/SearchBar";
 import { getUserContext } from "@/lib/auth/user-context";
 import { getPaginationParams } from "@/lib/utils/pagination";
 import {
@@ -91,15 +92,7 @@ export default async function DocumentsPage({
             <CardTitle>Patient documents</CardTitle>
             <CardDescription>Secure storage for reports and uploads.</CardDescription>
           </div>
-          <form method="get" className="flex w-full items-center gap-2 md:w-auto">
-            <Input
-              name="q"
-              placeholder="Search documents"
-              defaultValue={query}
-              className="h-9 md:w-56"
-            />
-            <Button size="sm" type="submit">Search</Button>
-          </form>
+          <SearchBar placeholder="Search documents" basePath="/documents" />
         </CardHeader>
         <CardContent className="space-y-6">
           <ActionForm

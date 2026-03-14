@@ -30,3 +30,8 @@
 - Added flat ESLint config for Next 16, normalized role extraction, and typed Supabase relation selects
 - Hardened appointment RLS to block provider self-assignment and tightened provider-side appointment actions
 - Replaced patient/provider dashboard redirect loops with a missing-profile state
+- Redesigned the public landing page into a dark, glassmorphism SaaS marketing layout with new sections and stats
+- Added hero preview SVG asset and extracted hero preview component
+- Updated RLS helper functions to SECURITY DEFINER to prevent stack depth recursion
+- Added profile image support and rebuilt dashboard topbar with dropdown menus and command palette
+- Converted dashboard search to client-side URL updates for global and module search

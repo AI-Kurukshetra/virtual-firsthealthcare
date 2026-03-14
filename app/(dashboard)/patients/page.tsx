@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { AuthFeedback } from "@/components/forms/AuthFeedback";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { Pagination } from "@/components/common/Pagination";
+import { SearchBar } from "@/components/common/SearchBar";
 import { getUserContext } from "@/lib/auth/user-context";
 import { getPaginationParams } from "@/lib/utils/pagination";
 import {
@@ -99,17 +100,7 @@ export default async function PatientsPage({
             <CardTitle>Active patients</CardTitle>
             <CardDescription>Clinical history, care plans, and alerts.</CardDescription>
           </div>
-          <form method="get" className="flex w-full items-center gap-2 md:w-auto">
-            <Input
-              name="q"
-              placeholder="Search patients"
-              defaultValue={query}
-              className="h-9 md:w-56"
-            />
-            <Button size="sm" type="submit">
-              Search
-            </Button>
-          </form>
+          <SearchBar placeholder="Search patients" basePath="/patients" />
         </CardHeader>
         <CardContent className="space-y-6">
           {canCreate ? (

@@ -1,0 +1,71 @@
+import Image from "next/image";
+import { CalendarClock, FileText, MessageSquareText, Stethoscope } from "lucide-react";
+
+export function HeroPreview() {
+  return (
+    <div className="glass noise relative overflow-hidden rounded-[32px] border border-white/10 p-6 shadow-glass">
+      <Image
+        src="/hero-preview.svg"
+        alt=""
+        width={520}
+        height={420}
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40"
+        priority
+      />
+      <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-primary/30 blur-2xl" />
+      <div className="absolute -bottom-10 left-10 h-28 w-28 rounded-full bg-accent/20 blur-3xl" />
+      <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/40">
+        <span>Care operations</span>
+        <span className="rounded-full border border-white/15 px-2 py-1 text-[10px]">Live</span>
+      </div>
+      <div className="mt-6 grid gap-4">
+        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+          <div>
+            <p className="text-xs text-white/50">Next appointment</p>
+            <p className="text-sm font-semibold text-white">09:30 AM · Maya Patel</p>
+          </div>
+          <span className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/70">
+            Telehealth
+          </span>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="flex items-center gap-2 text-xs text-white/50">
+              <Stethoscope className="h-4 w-4 text-accent" />
+              Active providers
+            </div>
+            <p className="mt-2 text-2xl font-semibold">112</p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="flex items-center gap-2 text-xs text-white/50">
+              <MessageSquareText className="h-4 w-4 text-accent" />
+              New messages
+            </div>
+            <p className="mt-2 text-2xl font-semibold">14</p>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-primary/20 via-white/5 to-accent/20 p-4">
+          <div className="flex items-center justify-between text-xs text-white/60">
+            <span className="flex items-center gap-2">
+              <CalendarClock className="h-4 w-4" />
+              Today
+            </span>
+            <span>38 patients</span>
+          </div>
+          <div className="mt-3 space-y-2">
+            <div className="flex items-center justify-between text-xs text-white/60">
+              <span className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Records updated
+              </span>
+              <span>24</span>
+            </div>
+            <div className="h-2 rounded-full bg-white/10">
+              <div className="h-full w-3/4 rounded-full bg-primary/70" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

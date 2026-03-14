@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { AuthFeedback } from "@/components/forms/AuthFeedback";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { Pagination } from "@/components/common/Pagination";
+import { SearchBar } from "@/components/common/SearchBar";
 import { getUserContext } from "@/lib/auth/user-context";
 import { getPaginationParams } from "@/lib/utils/pagination";
 import {
@@ -92,15 +93,7 @@ export default async function MessagingPage({
             <CardTitle>Conversations</CardTitle>
             <CardDescription>Secure provider-patient messaging.</CardDescription>
           </div>
-          <form method="get" className="flex w-full items-center gap-2 md:w-auto">
-            <Input
-              name="q"
-              placeholder="Search messages"
-              defaultValue={query}
-              className="h-9 md:w-56"
-            />
-            <Button size="sm" type="submit">Search</Button>
-          </form>
+          <SearchBar placeholder="Search messages" basePath="/messaging" />
         </CardHeader>
         <CardContent className="space-y-6">
           <ActionForm action={createConversationAction} className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">

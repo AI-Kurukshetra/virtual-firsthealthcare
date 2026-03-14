@@ -24,3 +24,7 @@
 - See `supabase/migrations/20260314150026_users_select_org.sql` and `database/migrations/20260314150026_users_select_org.sql`.
 - Hardened appointment insert/update policies to enforce org membership and prevent provider self-assignment.
 - See `supabase/migrations/20260314153000_appointments_rls_hardening.sql` and `database/migrations/20260314153000_appointments_rls_hardening.sql`.
+- Updated helper functions (`current_org_id`, `current_patient_id`, `current_provider_id`, `has_role`, `is_provider_for_patient`) to `SECURITY DEFINER` to prevent RLS recursion.
+- See `supabase/migrations/20260314163000_security_definer_helpers.sql` and `database/migrations/20260314163000_security_definer_helpers.sql`.
+- Added `profile_image` to `users` and exposed it in the `profiles` view.
+- See `supabase/migrations/20260314170000_profiles_avatar.sql` and `database/migrations/20260314170000_profiles_avatar.sql`.

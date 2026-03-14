@@ -25,3 +25,8 @@
 - [x] 2026-03-14 15:19 Fix ESLint config, resolve TS relation typing, and run tests
 - [x] 2026-03-14 15:28 Harden appointment RLS and provider appointment actions
 - [x] 2026-03-14 15:57 Fix patient/provider dashboard redirect loop when profile missing
+- [x] 2026-03-14 16:16 Redesign public landing page into SaaS marketing site
+- [x] 2026-03-14 16:21 Add hero preview asset and run lint/typecheck
+- [x] 2026-03-14 16:31 Fix RLS recursion causing stack depth limit exceeded
+- [x] 2026-03-14 16:44 Redesign dashboard topbar with dropdowns and command palette
+- [x] 2026-03-14 16:51 Replace module and global search with client-side navigation

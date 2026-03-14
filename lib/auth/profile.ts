@@ -5,6 +5,7 @@ export type Profile = {
   full_name: string | null;
   email: string | null;
   organization_id: string | null;
+  profile_image: string | null;
   role: string | null;
 };
 
@@ -18,7 +19,7 @@ export async function getProfile() {
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, full_name, email, organization_id, role")
+    .select("id, full_name, email, organization_id, profile_image, role")
     .eq("id", userData.user.id)
     .maybeSingle();
 
