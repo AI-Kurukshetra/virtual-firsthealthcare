@@ -30,3 +30,5 @@
 - See `supabase/migrations/20260314170000_profiles_avatar.sql` and `database/migrations/20260314170000_profiles_avatar.sql`.
 - Expanded user, provider, patient, appointment, document, message, notification, invoice, and telehealth fields for richer seed data.
 - See `supabase/migrations/20260314173000_profile_fields_expansion.sql` and `database/migrations/20260314173000_profile_fields_expansion.sql`.
+- Added RLS policies for `appointment_rooms`, `invoices`, and `payments` to support telehealth sessions and billing dashboards.
+- See `supabase/migrations/20260314183000_telehealth_billing_policies.sql`.

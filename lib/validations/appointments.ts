@@ -9,11 +9,14 @@ const appointmentStatusSchema = z.enum([
   "no_show"
 ]);
 
+const appointmentTypeSchema = z.enum(["video", "clinic"]);
+
 export const appointmentCreateSchema = z.object({
   patientId: z.string().uuid(),
   providerId: z.string().uuid(),
   scheduledAt: z.string().min(1, "Scheduled time is required"),
   status: appointmentStatusSchema.optional(),
+  appointmentType: appointmentTypeSchema.optional(),
   reason: z.string().optional()
 });
 
@@ -23,6 +26,7 @@ export const appointmentUpdateSchema = z.object({
   providerId: z.string().uuid(),
   scheduledAt: z.string().min(1, "Scheduled time is required"),
   status: appointmentStatusSchema.optional(),
+  appointmentType: appointmentTypeSchema.optional(),
   reason: z.string().optional()
 });
 

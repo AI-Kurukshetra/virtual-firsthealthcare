@@ -69,15 +69,21 @@ export async function updateNotificationAction(formData: FormData) {
     title?: string;
     body?: string;
     read_at?: string | null;
+    is_read?: boolean;
   } = {};
 
   if (context.role === "admin") {
-    updatePayload.title = parsed.data.title;
-    updatePayload.body = parsed.data.body;
+    if (parsed.data.title) {
+      updatePayload.title = parsed.data.title;
+    }
+    if (parsed.data.body) {
+      updatePayload.body = parsed.data.body;
+    }
   }
 
   if (parsed.data.read) {
     updatePayload.read_at = new Date().toISOString();
+    updatePayload.is_read = true;
   }
 
   if (Object.keys(updatePayload).length === 0) {

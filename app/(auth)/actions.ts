@@ -166,7 +166,7 @@ export async function forgotPasswordAction(values: ForgotPasswordInput) {
   const origin = headersList.get("origin") ?? "http://localhost:3000";
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${origin}/login`
+    redirectTo: `${origin}/reset-password`
   });
 
   if (error) {

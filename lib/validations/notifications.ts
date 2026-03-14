@@ -8,8 +8,8 @@ export const notificationCreateSchema = z.object({
 
 export const notificationUpdateSchema = z.object({
   id: z.string().uuid(),
-  title: z.string().min(1, "Title is required"),
-  body: z.string().min(1, "Message is required"),
+  title: z.string().min(1, "Title is required").optional(),
+  body: z.string().min(1, "Message is required").optional(),
   read: z.boolean().optional()
 });
 

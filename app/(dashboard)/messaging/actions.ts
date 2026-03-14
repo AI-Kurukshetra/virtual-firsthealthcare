@@ -175,15 +175,36 @@ export async function sendMessageAction(formData: FormData) {
     return { error: "Missing organization." };
   }
 
+  const { data: members } = await context.supabase
+    .from("conversation_members")
+    .select("user_id")
+    .eq("conversation_id", parsed.data.conversationId);
+
+  const receiverId =
+    members?.map((member) => member.user_id).find((id) => id && id !== context.userId) ?? null;
+
   const { error } = await context.supabase.from("messages").insert({
     organization_id: context.organizationId,
     conversation_id: parsed.data.conversationId,
     sender_id: context.userId,
+    receiver_id: receiverId,
     body: parsed.data.body
   });
 
   if (error) {
     return { error: error.message };
+  }
+
+  if (receiverId) {
+    const adminClient = createSupabaseAdminClient();
+    await adminClient.from("notifications").insert({
+      organization_id: context.organizationId,
+      user_id: receiverId,
+      title: "New message",
+      body: parsed.data.body.slice(0, 120),
+      type: "message",
+      is_read: false
+    });
   }
 
   return { success: "Message sent." };

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { CalendarClock, ClipboardPlus, Users } from "lucide-react";
+import { CalendarClock, ClipboardPlus, MessageSquareText, Pill, Users } from "lucide-react";
 
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { MetricCard } from "@/components/dashboard/MetricCard";
@@ -27,6 +27,19 @@ type RecordRow = {
   id: string;
   created_at: string | null;
   patients: { users: { full_name: string | null } | null } | null;
+};
+
+type PrescriptionRow = {
+  id: string;
+  medications: { name: string | null } | null;
+  patients: { users: { full_name: string | null } | null } | null;
+};
+
+type MessageRow = {
+  id: string;
+  body: string | null;
+  created_at: string | null;
+  sender_id: string | null;
 };
 
 function getTodayRange() {
@@ -78,9 +91,25 @@ export default async function ProviderDashboardPage() {
     .limit(5)
     .returns<RecordRow[]>();
 
+  const { data: prescriptions } = await supabase
+    .from("prescriptions")
+    .select("id, medications(name), patients(users(full_name))")
+    .eq("provider_id", providerId)
+    .order("created_at", { ascending: false })
+    .limit(5)
+    .returns<PrescriptionRow[]>();
+
+  const { data: messages } = await supabase
+    .from("messages")
+    .select("id, body, created_at, sender_id")
+    .eq("receiver_id", context.userId)
+    .order("created_at", { ascending: false })
+    .limit(5)
+    .returns<MessageRow[]>();
+
   return (
     <DashboardShell title="Provider dashboard" description="Your clinic view">
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-4">
         <MetricCard
           title="Today's appointments"
           value={String(todayAppointments?.length ?? 0)}
@@ -99,6 +128,12 @@ export default async function ProviderDashboardPage() {
           change="Last updates"
           icon={<ClipboardPlus className="h-5 w-5" />}
         />
+        <MetricCard
+          title="Prescriptions"
+          value={String(prescriptions?.length ?? 0)}
+          change="Recent prescriptions"
+          icon={<Pill className="h-5 w-5" />}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -107,9 +142,9 @@ export default async function ProviderDashboardPage() {
             <CardTitle>Today&apos;s appointments</CardTitle>
             <CardDescription>Upcoming visits for today.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-white/70">
+          <CardContent className="space-y-3 text-sm text-foreground/70">
             {(todayAppointments ?? []).length === 0 ? (
-              <p className="text-white/50">No appointments scheduled.</p>
+              <p className="text-foreground/50">No appointments scheduled.</p>
             ) : (
               todayAppointments?.map((appointment) => (
                 <div key={appointment.id} className="flex items-center justify-between">
@@ -133,14 +168,14 @@ export default async function ProviderDashboardPage() {
             <CardTitle>Patient list</CardTitle>
             <CardDescription>Recently assigned patients.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-white/70">
+          <CardContent className="space-y-3 text-sm text-foreground/70">
             {(patients ?? []).length === 0 ? (
-              <p className="text-white/50">No assigned patients yet.</p>
+              <p className="text-foreground/50">No assigned patients yet.</p>
             ) : (
               patients?.map((patient) => (
                 <div key={patient.id} className="flex items-center justify-between">
                   <span>{patient.users?.full_name ?? "Patient"}</span>
-                  <span className="text-white/40">{patient.users?.email ?? ""}</span>
+                  <span className="text-foreground/40">{patient.users?.email ?? ""}</span>
                 </div>
               ))
             )}
@@ -148,28 +183,52 @@ export default async function ProviderDashboardPage() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent records</CardTitle>
-          <CardDescription>Latest patient updates.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm text-white/70">
-          {(recentRecords ?? []).length === 0 ? (
-            <p className="text-white/50">No recent records.</p>
-          ) : (
-            recentRecords?.map((record) => (
-              <div key={record.id} className="flex items-center justify-between">
-                <span>{record.patients?.users?.full_name ?? "Patient"}</span>
-                <span className="text-white/40">
-                  {record.created_at
-                    ? new Date(record.created_at).toLocaleDateString()
-                    : ""}
-                </span>
-              </div>
-            ))
-          )}
-        </CardContent>
-      </Card>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent records</CardTitle>
+            <CardDescription>Latest patient updates.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-foreground/70">
+            {(recentRecords ?? []).length === 0 ? (
+              <p className="text-foreground/50">No recent records.</p>
+            ) : (
+              recentRecords?.map((record) => (
+                <div key={record.id} className="flex items-center justify-between">
+                  <span>{record.patients?.users?.full_name ?? "Patient"}</span>
+                  <span className="text-foreground/40">
+                    {record.created_at
+                      ? new Date(record.created_at).toLocaleDateString()
+                      : ""}
+                  </span>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent messages</CardTitle>
+            <CardDescription>Patient communications.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-foreground/70">
+            {(messages ?? []).length === 0 ? (
+              <p className="text-foreground/50">No new messages.</p>
+            ) : (
+              messages?.map((message) => (
+                <div key={message.id} className="flex items-center justify-between">
+                  <span className="line-clamp-1">{message.body ?? ""}</span>
+                  <span className="text-foreground/40">
+                    {message.created_at
+                      ? new Date(message.created_at).toLocaleDateString()
+                      : ""}
+                  </span>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </DashboardShell>
   );
 }

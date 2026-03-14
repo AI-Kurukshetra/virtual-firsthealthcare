@@ -18,10 +18,10 @@ export function DashboardShell({
         <div className="flex w-full flex-1 flex-col gap-6">
           <Topbar />
           <div className="flex flex-col gap-2">
-            <p className="text-xs uppercase tracking-[0.4em] text-white/40">
+            <p className="text-xs uppercase tracking-[0.4em] text-foreground/40">
               {description ?? "Operations"}
             </p>
-            <h2 className="text-3xl font-semibold text-white">{title}</h2>
+            <h2 className="text-3xl font-semibold text-foreground">{title}</h2>
           </div>
           {children}
         </div>

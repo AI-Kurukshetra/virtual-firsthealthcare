@@ -9,7 +9,7 @@ import {
   YAxis
 } from "recharts";
 
-const data = [
+const fallbackData = [
   { name: "Jan", revenue: 120000 },
   { name: "Feb", revenue: 142000 },
   { name: "Mar", revenue: 180000 },
@@ -18,31 +18,35 @@ const data = [
   { name: "Jun", revenue: 280000 }
 ];
 
-export function RevenueChart() {
+type RevenueChartProps = {
+  data?: { name: string; revenue: number }[];
+};
+
+export function RevenueChart({ data = fallbackData }: RevenueChartProps) {
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="revenue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#5B9CFF" stopOpacity={0.6} />
-              <stop offset="95%" stopColor="#5B9CFF" stopOpacity={0.05} />
+              <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.6} />
+              <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
             </linearGradient>
           </defs>
-          <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" />
-          <YAxis stroke="rgba(255,255,255,0.3)" />
+          <XAxis dataKey="name" stroke="hsl(var(--border))" />
+          <YAxis stroke="hsl(var(--border))" />
           <Tooltip
             contentStyle={{
-              background: "rgba(17,17,24,0.9)",
+              background: "hsl(var(--card))",
               borderRadius: 12,
-              border: "1px solid rgba(255,255,255,0.1)",
-              color: "white"
+              border: "1px solid hsl(var(--border))",
+              color: "hsl(var(--foreground))"
             }}
           />
           <Area
             type="monotone"
             dataKey="revenue"
-            stroke="#5B9CFF"
+            stroke="hsl(var(--primary))"
             fill="url(#revenue)"
             strokeWidth={2}
           />

@@ -29,13 +29,13 @@ export function PatientHighlights() {
         {highlights.map((item) => (
           <div
             key={item.name}
-            className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+            className="flex items-center justify-between rounded-2xl border border-border/60 bg-card/60 px-4 py-3"
           >
             <div>
-              <p className="text-sm font-semibold text-white">{item.name}</p>
-              <p className="text-xs text-white/50">{item.detail}</p>
+              <p className="text-sm font-semibold text-foreground">{item.name}</p>
+              <p className="text-xs text-foreground/50">{item.detail}</p>
             </div>
-            <p className="text-xs text-white/60">{item.next}</p>
+            <p className="text-xs text-foreground/60">{item.next}</p>
           </div>
         ))}
       </CardContent>

@@ -34,3 +34,5 @@
 [2026-03-14 17:08] coordinator — applied profile field expansion migration; seed run blocked by missing env vars
 [2026-03-14 17:12] coordinator — loaded env from .env.local and ran seed successfully
 [2026-03-14 17:15] coordinator — improved seed realism with 90-day timelines, upcoming appointments, and analytics events
+[2026-03-14 17:23] coordinator — added class-based theming with next-themes, theme tokens, and dashboard toggle
+[2026-03-14 17:55] coordinator — completed production audit fixes: users/billing/telehealth/reports modules, filters, notifications, dashboards, and reset password

@@ -31,11 +31,11 @@ export default function LabsPage() {
           {labs.map((lab) => (
             <div
               key={lab.patient}
-              className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+              className="flex items-center justify-between rounded-2xl border border-border/60 bg-card/60 px-4 py-3"
             >
               <div>
-                <p className="text-sm font-semibold text-white">{lab.patient}</p>
-                <p className="text-xs text-white/50">{lab.test}</p>
+                <p className="text-sm font-semibold text-foreground">{lab.patient}</p>
+                <p className="text-xs text-foreground/50">{lab.test}</p>
               </div>
               <Badge variant={lab.status === "Completed" ? "success" : "warning"}>
                 {lab.status}

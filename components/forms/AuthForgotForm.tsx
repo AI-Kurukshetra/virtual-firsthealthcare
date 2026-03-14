@@ -40,7 +40,7 @@ export function AuthForgotForm() {
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="space-y-2">
-        <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+        <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
           Email
         </label>
         <Input type="email" placeholder="you@health.org" {...form.register("email")} />
@@ -50,7 +50,7 @@ export function AuthForgotForm() {
       <Button className="w-full" type="submit" disabled={isPending}>
         {isPending ? "Sending..." : "Send reset link"}
       </Button>
-      <p className="text-xs text-white/50">
+      <p className="text-xs text-foreground/50">
         If the address exists, you will receive a secure reset link.
       </p>
     </form>

@@ -53,25 +53,25 @@ export function ProfileForm({
     <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+          <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
             Full name
           </label>
           <Input {...form.register("fullName")} />
         </div>
         <div className="space-y-2">
-          <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+          <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
             Email
           </label>
           <Input value={email} disabled className="opacity-60" />
         </div>
         <div className="space-y-2">
-          <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+          <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
             Role
           </label>
           <Input value={role} disabled className="opacity-60" />
         </div>
         <div className="space-y-2">
-          <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+          <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
             Organization
           </label>
           <Input value={organization} disabled className="opacity-60" />

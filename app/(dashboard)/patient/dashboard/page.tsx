@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { CalendarClock, FileText, Pill } from "lucide-react";
+import { CalendarClock, FileText, MessageSquareText, Pill } from "lucide-react";
 
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { MetricCard } from "@/components/dashboard/MetricCard";
@@ -29,6 +29,12 @@ type ReportRow = {
   id: string;
   bucket: string | null;
   documents: { title: string | null; created_at: string | null } | null;
+};
+
+type MessageRow = {
+  id: string;
+  body: string | null;
+  created_at: string | null;
 };
 
 export default async function PatientDashboardPage() {
@@ -74,9 +80,17 @@ export default async function PatientDashboardPage() {
     .limit(5)
     .returns<ReportRow[]>();
 
+  const { data: messages } = await supabase
+    .from("messages")
+    .select("id, body, created_at")
+    .eq("receiver_id", context.userId)
+    .order("created_at", { ascending: false })
+    .limit(5)
+    .returns<MessageRow[]>();
+
   return (
     <DashboardShell title="Patient dashboard" description="Your care summary">
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-4">
         <MetricCard
           title="Upcoming appointments"
           value={String(upcomingAppointments?.length ?? 0)}
@@ -95,6 +109,12 @@ export default async function PatientDashboardPage() {
           change="Recent uploads"
           icon={<FileText className="h-5 w-5" />}
         />
+        <MetricCard
+          title="Messages"
+          value={String(messages?.length ?? 0)}
+          change="Recent updates"
+          icon={<MessageSquareText className="h-5 w-5" />}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -103,9 +123,9 @@ export default async function PatientDashboardPage() {
             <CardTitle>Upcoming appointments</CardTitle>
             <CardDescription>Your next scheduled visits.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-white/70">
+          <CardContent className="space-y-3 text-sm text-foreground/70">
             {(upcomingAppointments ?? []).length === 0 ? (
-              <p className="text-white/50">No upcoming appointments.</p>
+              <p className="text-foreground/50">No upcoming appointments.</p>
             ) : (
               upcomingAppointments?.map((appointment) => (
                 <div key={appointment.id} className="flex items-center justify-between">
@@ -126,14 +146,14 @@ export default async function PatientDashboardPage() {
             <CardTitle>Prescriptions</CardTitle>
             <CardDescription>Your latest medications.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-white/70">
+          <CardContent className="space-y-3 text-sm text-foreground/70">
             {(prescriptions ?? []).length === 0 ? (
-              <p className="text-white/50">No prescriptions on file.</p>
+              <p className="text-foreground/50">No prescriptions on file.</p>
             ) : (
               prescriptions?.map((prescription) => (
                 <div key={prescription.id} className="flex items-center justify-between">
                   <span>{prescription.medications?.name ?? "Medication"}</span>
-                  <span className="text-white/40">
+                  <span className="text-foreground/40">
                     {prescription.dosage ?? ""} {prescription.frequency ?? ""}
                   </span>
                 </div>
@@ -143,28 +163,52 @@ export default async function PatientDashboardPage() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Reports</CardTitle>
-          <CardDescription>Uploaded documents and reports.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm text-white/70">
-          {(reports ?? []).length === 0 ? (
-            <p className="text-white/50">No reports available.</p>
-          ) : (
-            reports?.map((report) => (
-              <div key={report.id} className="flex items-center justify-between">
-                <span>{report.documents?.title ?? "Report"}</span>
-                <span className="text-white/40">
-                  {report.documents?.created_at
-                    ? new Date(report.documents.created_at).toLocaleDateString()
-                    : ""}
-                </span>
-              </div>
-            ))
-          )}
-        </CardContent>
-      </Card>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Reports</CardTitle>
+            <CardDescription>Uploaded documents and reports.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-foreground/70">
+            {(reports ?? []).length === 0 ? (
+              <p className="text-foreground/50">No reports available.</p>
+            ) : (
+              reports?.map((report) => (
+                <div key={report.id} className="flex items-center justify-between">
+                  <span>{report.documents?.title ?? "Report"}</span>
+                  <span className="text-foreground/40">
+                    {report.documents?.created_at
+                      ? new Date(report.documents.created_at).toLocaleDateString()
+                      : ""}
+                  </span>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Messages</CardTitle>
+            <CardDescription>Latest provider updates.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-foreground/70">
+            {(messages ?? []).length === 0 ? (
+              <p className="text-foreground/50">No new messages.</p>
+            ) : (
+              messages?.map((message) => (
+                <div key={message.id} className="flex items-center justify-between">
+                  <span className="line-clamp-1">{message.body ?? ""}</span>
+                  <span className="text-foreground/40">
+                    {message.created_at
+                      ? new Date(message.created_at).toLocaleDateString()
+                      : ""}
+                  </span>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </DashboardShell>
   );
 }

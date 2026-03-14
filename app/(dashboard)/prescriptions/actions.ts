@@ -1,6 +1,7 @@
 "use server";
 
 import { getUserContext } from "@/lib/auth/user-context";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   prescriptionCreateSchema,
@@ -105,6 +106,24 @@ export async function createPrescriptionAction(formData: FormData) {
 
     if (error) {
       return { error: error.message };
+    }
+
+    const adminClient = createSupabaseAdminClient();
+    const { data: patientRow } = await adminClient
+      .from("patients")
+      .select("user_id")
+      .eq("id", parsed.data.patientId)
+      .maybeSingle();
+
+    if (patientRow?.user_id) {
+      await adminClient.from("notifications").insert({
+        organization_id: context.organizationId,
+        user_id: patientRow.user_id,
+        title: "New prescription",
+        body: parsed.data.medicationName,
+        type: "prescription",
+        is_read: false
+      });
     }
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Failed to save medication." };

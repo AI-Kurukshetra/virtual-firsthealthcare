@@ -7,6 +7,7 @@ import { AuthFeedback } from "@/components/forms/AuthFeedback";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { Pagination } from "@/components/common/Pagination";
 import { SearchBar } from "@/components/common/SearchBar";
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { getUserContext } from "@/lib/auth/user-context";
 import { getPaginationParams } from "@/lib/utils/pagination";
 import {
@@ -18,6 +19,12 @@ import {
 export const metadata = {
   title: "Medical Records | Virtual Health Platform"
 };
+
+const rangeOptions = [
+  { label: "All", value: "" },
+  { label: "Last 30 days", value: "30" },
+  { label: "Last 90 days", value: "90" }
+];
 
 type MedicalRecordRow = {
   id: string;
@@ -40,6 +47,12 @@ export default async function MedicalRecordsPage({
   const role = context.role;
   const supabase = context.supabase;
   const { page, pageSize, query, from, to } = getPaginationParams(searchParams, 8);
+  const rawRange = Array.isArray(searchParams.range) ? searchParams.range[0] : searchParams.range;
+  const rangeFilter = (rawRange ?? "").trim();
+  const now = new Date();
+  const rangeStart = rangeFilter
+    ? new Date(now.getTime() - Number(rangeFilter) * 24 * 60 * 60 * 1000).toISOString()
+    : null;
 
   let records: MedicalRecordRow[] = [];
   let count = 0;
@@ -58,10 +71,16 @@ export default async function MedicalRecordsPage({
       records = [];
       count = 0;
     } else {
-      const response = await supabase
+      let responseQuery = supabase
         .from("medical_records")
         .select("id, created_at, patients(id, users(full_name))", { count: "exact" })
-        .in("patient_id", patientIds)
+        .in("patient_id", patientIds);
+
+      if (rangeStart) {
+        responseQuery = responseQuery.gte("created_at", rangeStart);
+      }
+
+      const response = await responseQuery
         .range(from, to)
         .order("created_at", { ascending: false })
         .returns<MedicalRecordRow[]>();
@@ -71,9 +90,15 @@ export default async function MedicalRecordsPage({
       error = response.error ? { message: response.error.message } : null;
     }
   } else {
-    const response = await supabase
+    let responseQuery = supabase
       .from("medical_records")
-      .select("id, created_at, patients(id, users(full_name))", { count: "exact" })
+      .select("id, created_at, patients(id, users(full_name))", { count: "exact" });
+
+    if (rangeStart) {
+      responseQuery = responseQuery.gte("created_at", rangeStart);
+    }
+
+    const response = await responseQuery
       .range(from, to)
       .order("created_at", { ascending: false })
       .returns<MedicalRecordRow[]>();
@@ -99,16 +124,19 @@ export default async function MedicalRecordsPage({
             <CardTitle>Recent clinical updates</CardTitle>
             <CardDescription>SOAP notes, diagnoses, and care plans.</CardDescription>
           </div>
-          <SearchBar placeholder="Search patients" basePath="/medical-records" />
+          <div className="flex flex-wrap items-center gap-3">
+            <FilterSelect param="range" label="Range" options={rangeOptions} basePath="/medical-records" />
+            <SearchBar placeholder="Search patients" basePath="/medical-records" />
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {canManage ? (
-            <ActionForm action={createMedicalRecordAction} className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-xs uppercase tracking-[0.3em] text-white/50">Create record</p>
+            <ActionForm action={createMedicalRecordAction} className="grid gap-3 rounded-2xl border border-border/60 bg-card/60 p-4">
+              <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">Create record</p>
               <div className="grid gap-3 md:grid-cols-2">
                 <select
                   name="patientId"
-                  className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                  className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                 >
                   <option value="">Select patient</option>
                   {(patientOptions ?? []).map((patient) => (
@@ -128,13 +156,13 @@ export default async function MedicalRecordsPage({
             {(records ?? []).map((record) => (
               <div
                 key={record.id}
-                className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                className="rounded-2xl border border-border/60 bg-card/60 p-4"
               >
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-foreground">
                   {record.patients?.users?.full_name ?? "Patient"}
                 </p>
-                <p className="text-xs text-white/50">Record ID: {record.id}</p>
-                <p className="mt-2 text-xs text-white/40">
+                <p className="text-xs text-foreground/50">Record ID: {record.id}</p>
+                <p className="mt-2 text-xs text-foreground/40">
                   Updated {record.created_at ? new Date(record.created_at).toLocaleDateString() : ""}
                 </p>
                 {canManage ? (
@@ -144,7 +172,7 @@ export default async function MedicalRecordsPage({
                       <select
                         name="patientId"
                         defaultValue={record.patients?.id ?? ""}
-                        className="h-10 w-full rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                        className="h-10 w-full rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                       >
                         <option value="">Select patient</option>
                         {(patientOptions ?? []).map((patient) => (

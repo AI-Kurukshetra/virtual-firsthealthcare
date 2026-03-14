@@ -27,14 +27,14 @@ export async function Topbar() {
   const { data: notifications } = user?.id
     ? await supabase
         .from("notifications")
-        .select("id, title, body, read_at, created_at")
+        .select("id, title, body, read_at, is_read, created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(4)
     : { data: [] };
 
   const notificationList = notifications ?? [];
-  const unreadCount = notificationList.filter((item) => !item.read_at).length;
+  const unreadCount = notificationList.filter((item) => !item.read_at && !item.is_read).length;
   const showBilling = role === "admin" || role === "provider";
 
   return (

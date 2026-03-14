@@ -21,7 +21,7 @@ export function Pagination({
   const nextPage = Math.min(page + 1, totalPages);
 
   return (
-    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white/70">
+    <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-card/60 px-4 py-3 text-xs text-foreground/70">
       <span>
         Page {page} of {totalPages}
       </span>
@@ -30,8 +30,8 @@ export function Pagination({
           href={`${basePath}${buildSearchParams(searchParams, { page: prevPage })}`}
           className={`rounded-full border px-3 py-1 transition ${
             page === 1
-              ? "pointer-events-none border-white/10 text-white/30"
-              : "border-white/20 text-white hover:bg-white/10"
+              ? "pointer-events-none border-border/60 text-foreground/30"
+              : "border-border/80 text-foreground hover:bg-card/70"
           }`}
         >
           Prev
@@ -40,8 +40,8 @@ export function Pagination({
           href={`${basePath}${buildSearchParams(searchParams, { page: nextPage })}`}
           className={`rounded-full border px-3 py-1 transition ${
             page === totalPages
-              ? "pointer-events-none border-white/10 text-white/30"
-              : "border-white/20 text-white hover:bg-white/10"
+              ? "pointer-events-none border-border/60 text-foreground/30"
+              : "border-border/80 text-foreground hover:bg-card/70"
           }`}
         >
           Next

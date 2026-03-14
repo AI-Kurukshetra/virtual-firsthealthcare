@@ -3,12 +3,39 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: light;
+  --background: 0 0% 100%;
+  --foreground: 224 18% 16%;
+  --card: 0 0% 98%;
+  --card-foreground: 224 18% 16%;
+  --border: 220 14% 85%;
+  --primary: 220 86% 55%;
+  --accent: 197 88% 55%;
+}
+
+.dark {
   color-scheme: dark;
+  --background: 240 20% 6%;
+  --foreground: 210 40% 96%;
+  --card: 240 18% 10%;
+  --card-foreground: 210 40% 96%;
+  --border: 230 14% 18%;
+  --primary: 214 100% 68%;
+  --accent: 190 100% 80%;
 }
 
 body {
-  @apply bg-background text-white antialiased;
-  background-image: theme("backgroundImage.mesh-radial");
+  @apply bg-background text-foreground antialiased transition-colors duration-300;
+}
+
+body {
+  background-image: radial-gradient(1200px circle at 10% 0%, rgba(69, 130, 255, 0.08), transparent 55%),
+    radial-gradient(800px circle at 80% 20%, rgba(124, 224, 255, 0.06), transparent 60%);
+}
+
+.dark body {
+  background-image: radial-gradient(1200px circle at 10% 0%, rgba(91, 156, 255, 0.18), transparent 55%),
+    radial-gradient(800px circle at 80% 20%, rgba(158, 230, 255, 0.12), transparent 60%);
 }
 
 .glass {

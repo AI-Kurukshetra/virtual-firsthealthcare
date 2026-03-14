@@ -37,3 +37,8 @@
 - Converted dashboard search to client-side URL updates for global and module search
 - Added Supabase seed script with realistic relational data and expanded schema for full seed coverage
 - Refined seed timelines for 90-day trends, upcoming appointments, reports, and analytics events
+- Added next-themes provider, theme toggle, and tokenized colors for light/dark/system support
+- Added users, billing, telehealth, and reports modules with CRUD actions, filters, and pagination
+- Wired notifications for appointments, prescriptions, messages, and document uploads
+- Added password reset flow, admin/provider/patient dashboard data updates, and live chart data
+- Hardened RLS for appointment rooms/invoices/payments and extended document metadata support

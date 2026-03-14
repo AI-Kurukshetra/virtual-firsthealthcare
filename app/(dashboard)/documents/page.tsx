@@ -7,6 +7,7 @@ import { AuthFeedback } from "@/components/forms/AuthFeedback";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { Pagination } from "@/components/common/Pagination";
 import { SearchBar } from "@/components/common/SearchBar";
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { getUserContext } from "@/lib/auth/user-context";
 import { getPaginationParams } from "@/lib/utils/pagination";
 import {
@@ -32,6 +33,12 @@ type DocumentRow = {
     | null;
 };
 
+const bucketOptions = [
+  { label: "All", value: "" },
+  { label: "Documents", value: "documents" },
+  { label: "Reports", value: "reports" }
+];
+
 export default async function DocumentsPage({
   searchParams
 }: {
@@ -45,6 +52,8 @@ export default async function DocumentsPage({
   const role = context.role;
   const supabase = context.supabase;
   const { page, pageSize, query, from, to } = getPaginationParams(searchParams, 6);
+  const rawBucket = Array.isArray(searchParams.bucket) ? searchParams.bucket[0] : searchParams.bucket;
+  const bucketFilter = (rawBucket ?? "").trim();
 
   let documentsQuery = supabase
     .from("documents")
@@ -56,6 +65,10 @@ export default async function DocumentsPage({
 
   if (query) {
     documentsQuery = documentsQuery.ilike("title", `%${query}%`);
+  }
+
+  if (bucketFilter) {
+    documentsQuery = documentsQuery.eq("files.bucket", bucketFilter);
   }
 
   const { data: documents, error, count } = await documentsQuery.returns<DocumentRow[]>();
@@ -92,15 +105,18 @@ export default async function DocumentsPage({
             <CardTitle>Patient documents</CardTitle>
             <CardDescription>Secure storage for reports and uploads.</CardDescription>
           </div>
-          <SearchBar placeholder="Search documents" basePath="/documents" />
+          <div className="flex flex-wrap items-center gap-3">
+            <FilterSelect param="bucket" label="Bucket" options={bucketOptions} basePath="/documents" />
+            <SearchBar placeholder="Search documents" basePath="/documents" />
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <ActionForm
             action={createDocumentAction}
             encType="multipart/form-data"
-            className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
+            className="grid gap-3 rounded-2xl border border-border/60 bg-card/60 p-4"
           >
-            <p className="text-xs uppercase tracking-[0.3em] text-white/50">Upload document</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">Upload document</p>
             <div className="grid gap-3 md:grid-cols-2">
               <Input name="title" placeholder="Title" />
               {role === "patient" ? (
@@ -108,7 +124,7 @@ export default async function DocumentsPage({
               ) : (
                 <select
                   name="patientId"
-                  className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                  className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                 >
                   <option value="">Select patient</option>
                   {(patientOptions ?? []).map((patient) => (
@@ -120,7 +136,7 @@ export default async function DocumentsPage({
               )}
               <select
                 name="bucket"
-                className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
               >
                 <option value="documents">Documents</option>
                 <option value="reports">Reports</option>
@@ -128,7 +144,7 @@ export default async function DocumentsPage({
               <input
                 type="file"
                 name="file"
-                className="md:col-span-2 text-sm text-white/70"
+                className="md:col-span-2 text-sm text-foreground/70"
               />
             </div>
             <Button size="sm" type="submit">Upload</Button>
@@ -140,24 +156,35 @@ export default async function DocumentsPage({
             {documentsWithUrls.map((doc) => (
               <div
                 key={doc.id}
-                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4"
+                className="rounded-2xl border border-border/60 bg-card/60 px-4 py-4"
               >
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-white">{doc.title}</p>
-                    <p className="text-xs text-white/50">
+                    <p className="text-sm font-semibold text-foreground">{doc.title}</p>
+                    <p className="text-xs text-foreground/50">
                       {doc.patients?.users?.full_name ?? "Patient"}
                     </p>
                   </div>
                   {doc.downloadUrl ? (
-                    <a
-                      href={doc.downloadUrl}
-                      className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/80 hover:bg-white/10"
-                    >
-                      Download
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={doc.downloadUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full border border-border/80 px-3 py-1 text-xs text-foreground/80 hover:bg-card/70"
+                      >
+                        Preview
+                      </a>
+                      <a
+                        href={doc.downloadUrl}
+                        download
+                        className="rounded-full border border-border/80 px-3 py-1 text-xs text-foreground/80 hover:bg-card/70"
+                      >
+                        Download
+                      </a>
+                    </div>
                   ) : (
-                    <span className="text-xs text-white/40">No file</span>
+                    <span className="text-xs text-foreground/40">No file</span>
                   )}
                 </div>
                 <div className="mt-4 space-y-3">
@@ -171,7 +198,7 @@ export default async function DocumentsPage({
                         <select
                           name="patientId"
                           defaultValue={doc.patients?.id ?? ""}
-                          className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                          className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                         >
                           <option value="">Select patient</option>
                           {(patientOptions ?? []).map((patient) => (

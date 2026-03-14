@@ -8,6 +8,7 @@ import { AuthFeedback } from "@/components/forms/AuthFeedback";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { Pagination } from "@/components/common/Pagination";
 import { SearchBar } from "@/components/common/SearchBar";
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { getUserContext } from "@/lib/auth/user-context";
 import { getPaginationParams } from "@/lib/utils/pagination";
 import {
@@ -19,6 +20,13 @@ import {
 export const metadata = {
   title: "Patients | Virtual Health Platform"
 };
+
+const genderOptions = [
+  { label: "All", value: "" },
+  { label: "Female", value: "female" },
+  { label: "Male", value: "male" },
+  { label: "Other", value: "other" }
+];
 
 type PatientRow = {
   id: string;
@@ -40,8 +48,13 @@ export default async function PatientsPage({
   }
 
   const role = context.role;
+  if (role === "patient") {
+    redirect("/patient/dashboard");
+  }
   const supabase = context.supabase;
   const { page, pageSize, query, from, to } = getPaginationParams(searchParams, 8);
+  const rawGender = Array.isArray(searchParams.gender) ? searchParams.gender[0] : searchParams.gender;
+  const genderFilter = (rawGender ?? "").trim();
 
   let patients: PatientRow[] = [];
   let count = 0;
@@ -60,12 +73,18 @@ export default async function PatientsPage({
       patients = [];
       count = 0;
     } else {
-      const response = await supabase
+      let responseQuery = supabase
         .from("patients")
         .select("id, date_of_birth, gender, phone, address, users(full_name, email)", {
           count: "exact"
         })
-        .in("user_id", userIds)
+        .in("user_id", userIds);
+
+      if (genderFilter) {
+        responseQuery = responseQuery.eq("gender", genderFilter);
+      }
+
+      const response = await responseQuery
         .range(from, to)
         .order("created_at", { ascending: false })
         .returns<PatientRow[]>();
@@ -75,11 +94,17 @@ export default async function PatientsPage({
       error = response.error ? { message: response.error.message } : null;
     }
   } else {
-    const response = await supabase
+    let responseQuery = supabase
       .from("patients")
       .select("id, date_of_birth, gender, phone, address, users(full_name, email)", {
         count: "exact"
-      })
+      });
+
+    if (genderFilter) {
+      responseQuery = responseQuery.eq("gender", genderFilter);
+    }
+
+    const response = await responseQuery
       .range(from, to)
       .order("created_at", { ascending: false })
       .returns<PatientRow[]>();
@@ -100,15 +125,18 @@ export default async function PatientsPage({
             <CardTitle>Active patients</CardTitle>
             <CardDescription>Clinical history, care plans, and alerts.</CardDescription>
           </div>
-          <SearchBar placeholder="Search patients" basePath="/patients" />
+          <div className="flex flex-wrap items-center gap-3">
+            <FilterSelect param="gender" label="Gender" options={genderOptions} basePath="/patients" />
+            <SearchBar placeholder="Search patients" basePath="/patients" />
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {canCreate ? (
             <ActionForm
               action={createPatientAction}
-              className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
+              className="grid gap-3 rounded-2xl border border-border/60 bg-card/60 p-4"
             >
-              <p className="text-xs uppercase tracking-[0.3em] text-white/50">Add patient</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">Add patient</p>
               <div className="grid gap-3 md:grid-cols-2">
                 <Input name="fullName" placeholder="Full name" />
                 <Input name="email" type="email" placeholder="Email" />
@@ -137,7 +165,7 @@ export default async function PatientsPage({
             <TableBody>
               {(patients ?? []).map((patient) => (
                 <TableRow key={patient.id}>
-                  <TableCell className="font-medium text-white">
+                  <TableCell className="font-medium text-foreground">
                     {patient.users?.full_name ?? "Unassigned"}
                   </TableCell>
                   <TableCell>{patient.users?.email ?? "-"}</TableCell>

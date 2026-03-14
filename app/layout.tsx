@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Manrope } from "next/font/google";
 import { Providers } from "@/components/layout/Providers";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const displayFont = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -27,12 +28,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
         className={`${displayFont.variable} ${bodyFont.variable} font-[var(--font-body)]`}
       >
-        <Providers>{children}</Providers>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <Providers>{children}</Providers>
+        </ThemeProvider>
       </body>
     </html>
   );

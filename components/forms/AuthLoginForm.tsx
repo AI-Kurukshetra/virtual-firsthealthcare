@@ -36,13 +36,13 @@ export function AuthLoginForm() {
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="space-y-2">
-        <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+        <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
           Email
         </label>
         <Input type="email" placeholder="you@health.org" {...form.register("email")} />
       </div>
       <div className="space-y-2">
-        <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+        <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
           Password
         </label>
         <Input type="password" placeholder="••••••••" {...form.register("password")} />
@@ -51,12 +51,15 @@ export function AuthLoginForm() {
       <Button className="w-full" type="submit" disabled={isPending}>
         {isPending ? "Signing in..." : "Sign in"}
       </Button>
-      <p className="text-xs text-white/50">
+      <Link className="text-xs text-accent hover:text-foreground" href="/forgot-password">
+        Forgot your password?
+      </Link>
+      <p className="text-xs text-foreground/50">
         By continuing, you agree to HIPAA-grade security and audit logging.
       </p>
-      <p className="text-xs text-white/60">
+      <p className="text-xs text-foreground/60">
         New here?{" "}
-        <Link className="text-accent hover:text-white" href="/register">
+        <Link className="text-accent hover:text-foreground" href="/register">
           Create an account
         </Link>
       </p>

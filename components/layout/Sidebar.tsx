@@ -16,11 +16,13 @@ import {
 import { getProfile, getDashboardPath } from "@/lib/auth/profile";
 
 const navItems = [
+  { href: "/users", label: "Users", icon: Users },
   { href: "/patients", label: "Patients", icon: Users },
   { href: "/providers", label: "Providers", icon: Stethoscope },
   { href: "/appointments", label: "Appointments", icon: Calendar },
   { href: "/medical-records", label: "Records", icon: ClipboardPlus },
   { href: "/documents", label: "Documents", icon: FileText },
+  { href: "/reports", label: "Reports", icon: FileText },
   { href: "/prescriptions", label: "Prescriptions", icon: Pill },
   { href: "/labs", label: "Labs", icon: HeartPulse },
   { href: "/messaging", label: "Messaging", icon: MessageSquareText },
@@ -31,11 +33,13 @@ const navItems = [
 
 const roleVisibility: Record<string, Set<string>> = {
   admin: new Set([
+    "/users",
     "/patients",
     "/providers",
     "/appointments",
     "/medical-records",
     "/documents",
+    "/reports",
     "/prescriptions",
     "/labs",
     "/messaging",
@@ -48,6 +52,7 @@ const roleVisibility: Record<string, Set<string>> = {
     "/appointments",
     "/medical-records",
     "/documents",
+    "/reports",
     "/prescriptions",
     "/labs",
     "/messaging",
@@ -57,6 +62,7 @@ const roleVisibility: Record<string, Set<string>> = {
   patient: new Set([
     "/appointments",
     "/documents",
+    "/reports",
     "/prescriptions",
     "/messaging",
     "/telehealth",
@@ -81,15 +87,15 @@ export async function Sidebar() {
   return (
     <aside className="glass noise hidden h-full w-72 flex-col gap-6 rounded-[32px] p-6 md:flex">
       <div className="space-y-1">
-        <p className="text-xs uppercase tracking-[0.3em] text-white/40">Virtual Health</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
+        <p className="text-xs uppercase tracking-[0.3em] text-foreground/40">Virtual Health</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           HealthCare Plus
         </h1>
       </div>
       <nav className="flex flex-1 flex-col gap-2">
         <Link
           href={dashboardHref}
-          className="flex items-center gap-3 rounded-2xl border border-white/5 px-4 py-3 text-sm text-white/70 transition hover:border-white/20 hover:bg-white/5"
+          className="flex items-center gap-3 rounded-2xl border border-border/40 px-4 py-3 text-sm text-foreground/70 transition hover:border-border/80 hover:bg-card/60"
         >
           <LayoutDashboard className="h-4 w-4 text-accent" />
           Dashboard
@@ -100,7 +106,7 @@ export async function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-3 rounded-2xl border border-white/5 px-4 py-3 text-sm text-white/70 transition hover:border-white/20 hover:bg-white/5"
+              className="flex items-center gap-3 rounded-2xl border border-border/40 px-4 py-3 text-sm text-foreground/70 transition hover:border-border/80 hover:bg-card/60"
             >
               <Icon className="h-4 w-4 text-accent" />
               {item.label}
@@ -108,9 +114,9 @@ export async function Sidebar() {
           );
         })}
       </nav>
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-        <p className="text-xs uppercase tracking-[0.3em] text-white/40">Active Org</p>
-        <p className="text-sm font-semibold text-white">HealthCare Plus</p>
+      <div className="rounded-2xl border border-border/60 bg-card/60 p-4">
+        <p className="text-xs uppercase tracking-[0.3em] text-foreground/40">Active Org</p>
+        <p className="text-sm font-semibold text-foreground">HealthCare Plus</p>
       </div>
     </aside>
   );

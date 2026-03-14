@@ -10,11 +10,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0B0B0F",
-        card: "#111118",
-        border: "#1F1F28",
-        primary: "#5B9CFF",
-        accent: "#9EE6FF"
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        card: "hsl(var(--card))",
+        cardForeground: "hsl(var(--card-foreground))",
+        border: "hsl(var(--border))",
+        primary: "hsl(var(--primary))",
+        accent: "hsl(var(--accent))"
       },
       boxShadow: {
         glow: "0 0 20px rgba(91, 156, 255, 0.35)",

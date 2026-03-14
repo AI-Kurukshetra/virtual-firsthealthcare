@@ -8,6 +8,7 @@ import { AuthFeedback } from "@/components/forms/AuthFeedback";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { Pagination } from "@/components/common/Pagination";
 import { SearchBar } from "@/components/common/SearchBar";
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getUserContext } from "@/lib/auth/user-context";
 import { getPaginationParams } from "@/lib/utils/pagination";
@@ -30,6 +31,8 @@ const statusOptions = [
   "no_show"
 ];
 
+const appointmentTypeOptions = ["video", "clinic"];
+
 type PatientOption = { id: string; users: { full_name: string | null } | null };
 
 type ProviderOption = { id: string; users: { full_name: string | null } | null };
@@ -39,6 +42,7 @@ type AppointmentRow = {
   scheduled_at: string | null;
   status: string | null;
   reason: string | null;
+  appointment_type?: string | null;
   patients: { id: string; users: { full_name: string | null } | null } | null;
   providers: { id: string; users: { full_name: string | null } | null } | null;
 };
@@ -56,11 +60,13 @@ export default async function AppointmentsPage({
   const role = context.role;
   const supabase = context.supabase;
   const { page, pageSize, query, from, to } = getPaginationParams(searchParams, 8);
+  const rawStatus = Array.isArray(searchParams.status) ? searchParams.status[0] : searchParams.status;
+  const statusFilter = (rawStatus ?? "").trim();
 
   let appointmentsQuery = supabase
     .from("appointments")
     .select(
-      "id, scheduled_at, status, reason, patients(id, users(full_name)), providers(id, users(full_name))",
+      "id, scheduled_at, status, reason, appointment_type, patients(id, users(full_name)), providers(id, users(full_name))",
       { count: "exact" }
     )
     .range(from, to)
@@ -68,6 +74,10 @@ export default async function AppointmentsPage({
 
   if (query) {
     appointmentsQuery = appointmentsQuery.or(`reason.ilike.%${query}%,status.ilike.%${query}%`);
+  }
+
+  if (statusFilter) {
+    appointmentsQuery = appointmentsQuery.eq("status", statusFilter);
   }
 
   const { data: appointments, error, count } =
@@ -114,7 +124,15 @@ export default async function AppointmentsPage({
             <CardTitle>Upcoming appointments</CardTitle>
             <CardDescription>Provider availability and patient schedules.</CardDescription>
           </div>
-          <SearchBar placeholder="Search status or reason" basePath="/appointments" />
+          <div className="flex flex-wrap items-center gap-3">
+            <FilterSelect
+              param="status"
+              label="Status"
+              options={[{ label: "All", value: "" }, ...statusOptions.map((status) => ({ label: status, value: status }))]}
+              basePath="/appointments"
+            />
+            <SearchBar placeholder="Search status or reason" basePath="/appointments" />
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {role === "patient" && !patientId ? (
@@ -124,15 +142,15 @@ export default async function AppointmentsPage({
             <AuthFeedback message="Missing provider profile." />
           ) : null}
 
-          <ActionForm action={createAppointmentAction} className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-xs uppercase tracking-[0.3em] text-white/50">Book appointment</p>
+          <ActionForm action={createAppointmentAction} className="grid gap-3 rounded-2xl border border-border/60 bg-card/60 p-4">
+            <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">Book appointment</p>
             <div className="grid gap-3 md:grid-cols-2">
               {role === "patient" ? (
                 <input type="hidden" name="patientId" value={patientId} />
               ) : (
                 <select
                   name="patientId"
-                  className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                  className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                 >
                   <option value="">Select patient</option>
                   {(patientOptions ?? []).map((patient) => (
@@ -148,7 +166,7 @@ export default async function AppointmentsPage({
               ) : (
                 <select
                   name="providerId"
-                  className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                  className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                 >
                   <option value="">Select provider</option>
                   {(providerOptions ?? []).map((provider) => (
@@ -161,8 +179,18 @@ export default async function AppointmentsPage({
 
               <Input name="scheduledAt" type="datetime-local" />
               <select
+                name="appointmentType"
+                className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
+              >
+                {appointmentTypeOptions.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+              <select
                 name="status"
-                className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
               >
                 {statusOptions.map((status) => (
                   <option key={status} value={status}>
@@ -181,15 +209,15 @@ export default async function AppointmentsPage({
             {(appointments ?? []).map((appointment) => (
               <div
                 key={appointment.id}
-                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4"
+                className="rounded-2xl border border-border/60 bg-card/60 px-4 py-4"
               >
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-foreground">
                       {appointment.patients?.users?.full_name ?? "Patient"} · {" "}
                       {appointment.providers?.users?.full_name ?? "Provider"}
                     </p>
-                    <p className="text-xs text-white/50">
+                    <p className="text-xs text-foreground/50">
                       {appointment.scheduled_at
                         ? new Date(appointment.scheduled_at).toLocaleString()
                         : ""}
@@ -209,7 +237,7 @@ export default async function AppointmentsPage({
                         <select
                           name="patientId"
                           defaultValue={appointment.patients?.id ?? ""}
-                          className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                          className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                         >
                           <option value="">Select patient</option>
                           {(patientOptions ?? []).map((patient) => (
@@ -226,7 +254,7 @@ export default async function AppointmentsPage({
                         <select
                           name="providerId"
                           defaultValue={appointment.providers?.id ?? ""}
-                          className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                          className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                         >
                           <option value="">Select provider</option>
                           {(providerOptions ?? []).map((provider) => (
@@ -242,9 +270,20 @@ export default async function AppointmentsPage({
                         defaultValue={appointment.scheduled_at?.slice(0, 16) ?? ""}
                       />
                       <select
+                        name="appointmentType"
+                        defaultValue={appointment.appointment_type ?? "video"}
+                        className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
+                      >
+                        {appointmentTypeOptions.map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                      <select
                         name="status"
                         defaultValue={appointment.status ?? ""}
-                        className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                        className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                       >
                         {statusOptions.map((status) => (
                           <option key={status} value={status}>

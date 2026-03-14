@@ -7,6 +7,7 @@ import { AuthFeedback } from "@/components/forms/AuthFeedback";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { Pagination } from "@/components/common/Pagination";
 import { SearchBar } from "@/components/common/SearchBar";
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { getUserContext } from "@/lib/auth/user-context";
 import { getPaginationParams } from "@/lib/utils/pagination";
 import {
@@ -34,6 +35,12 @@ type PatientOption = { id: string; users: { full_name: string | null } | null };
 
 type ProviderOption = { id: string; users: { full_name: string | null } | null };
 
+const statusOptions = [
+  { label: "All", value: "" },
+  { label: "Active", value: "active" },
+  { label: "Expired", value: "expired" }
+];
+
 export default async function PrescriptionsPage({
   searchParams
 }: {
@@ -47,6 +54,9 @@ export default async function PrescriptionsPage({
   const role = context.role;
   const supabase = context.supabase;
   const { page, pageSize, query, from, to } = getPaginationParams(searchParams, 8);
+  const rawStatus = Array.isArray(searchParams.status) ? searchParams.status[0] : searchParams.status;
+  const statusFilter = (rawStatus ?? "").trim();
+  const now = new Date().toISOString();
 
   let prescriptions: PrescriptionRow[] = [];
   let count = 0;
@@ -65,13 +75,21 @@ export default async function PrescriptionsPage({
       prescriptions = [];
       count = 0;
     } else {
-      const response = await supabase
+      let responseQuery = supabase
         .from("prescriptions")
         .select(
           "id, dosage, frequency, start_date, end_date, patients(id, users(full_name)), providers(id, users(full_name)), medications(name)",
           { count: "exact" }
         )
-        .in("medication_id", medicationIds)
+        .in("medication_id", medicationIds);
+
+      if (statusFilter === "active") {
+        responseQuery = responseQuery.or(`end_date.is.null,end_date.gte.${now}`);
+      } else if (statusFilter === "expired") {
+        responseQuery = responseQuery.lte("end_date", now);
+      }
+
+      const response = await responseQuery
         .range(from, to)
         .order("created_at", { ascending: false })
         .returns<PrescriptionRow[]>();
@@ -81,12 +99,20 @@ export default async function PrescriptionsPage({
       error = response.error ? { message: response.error.message } : null;
     }
   } else {
-    const response = await supabase
+    let responseQuery = supabase
       .from("prescriptions")
       .select(
         "id, dosage, frequency, start_date, end_date, patients(id, users(full_name)), providers(id, users(full_name)), medications(name)",
         { count: "exact" }
-      )
+      );
+
+    if (statusFilter === "active") {
+      responseQuery = responseQuery.or(`end_date.is.null,end_date.gte.${now}`);
+    } else if (statusFilter === "expired") {
+      responseQuery = responseQuery.lte("end_date", now);
+    }
+
+    const response = await responseQuery
       .range(from, to)
       .order("created_at", { ascending: false })
       .returns<PrescriptionRow[]>();
@@ -119,16 +145,19 @@ export default async function PrescriptionsPage({
             <CardTitle>Active prescriptions</CardTitle>
             <CardDescription>Provider-issued medications and refills.</CardDescription>
           </div>
-          <SearchBar placeholder="Search medication" basePath="/prescriptions" />
+          <div className="flex flex-wrap items-center gap-3">
+            <FilterSelect param="status" label="Status" options={statusOptions} basePath="/prescriptions" />
+            <SearchBar placeholder="Search medication" basePath="/prescriptions" />
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {canManage ? (
-            <ActionForm action={createPrescriptionAction} className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-xs uppercase tracking-[0.3em] text-white/50">Create prescription</p>
+            <ActionForm action={createPrescriptionAction} className="grid gap-3 rounded-2xl border border-border/60 bg-card/60 p-4">
+              <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">Create prescription</p>
               <div className="grid gap-3 md:grid-cols-2">
                 <select
                   name="patientId"
-                  className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                  className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                 >
                   <option value="">Select patient</option>
                   {(patientOptions ?? []).map((patient) => (
@@ -142,7 +171,7 @@ export default async function PrescriptionsPage({
                 ) : (
                   <select
                     name="providerId"
-                    className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                    className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                   >
                     <option value="">Select provider</option>
                     {(providerOptions ?? []).map((provider) => (
@@ -168,16 +197,16 @@ export default async function PrescriptionsPage({
             {(prescriptions ?? []).map((item) => (
               <div
                 key={item.id}
-                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4"
+                className="rounded-2xl border border-border/60 bg-card/60 px-4 py-4"
               >
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-foreground">
                       {item.patients?.users?.full_name ?? "Patient"}
                     </p>
-                    <p className="text-xs text-white/50">{item.medications?.name ?? "Medication"}</p>
+                    <p className="text-xs text-foreground/50">{item.medications?.name ?? "Medication"}</p>
                   </div>
-                  <p className="text-xs text-white/60">
+                  <p className="text-xs text-foreground/60">
                     {item.dosage ?? ""} {item.frequency ?? ""}
                   </p>
                 </div>
@@ -189,7 +218,7 @@ export default async function PrescriptionsPage({
                         <select
                           name="patientId"
                           defaultValue={item.patients?.id ?? ""}
-                          className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                          className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                         >
                           <option value="">Select patient</option>
                           {(patientOptions ?? []).map((patient) => (
@@ -204,7 +233,7 @@ export default async function PrescriptionsPage({
                           <select
                             name="providerId"
                             defaultValue={item.providers?.id ?? ""}
-                            className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+                            className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
                           >
                             <option value="">Select provider</option>
                             {(providerOptions ?? []).map((provider) => (

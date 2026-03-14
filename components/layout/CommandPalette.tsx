@@ -50,8 +50,8 @@ export function CommandPalette() {
           <DialogTitle>Command Palette</DialogTitle>
           <DialogDescription>Jump to anything in the platform.</DialogDescription>
         </DialogHeader>
-        <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-          <Search className="h-4 w-4 text-white/50" />
+        <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/60 px-3 py-2">
+          <Search className="h-4 w-4 text-foreground/50" />
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -61,22 +61,22 @@ export function CommandPalette() {
         </div>
         <div className="max-h-64 space-y-2 overflow-auto">
           {filtered.length === 0 ? (
-            <p className="text-sm text-white/60">No results.</p>
+            <p className="text-sm text-foreground/60">No results.</p>
           ) : (
             filtered.map((action) => (
               <Link
                 key={action.href}
                 href={action.href}
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80 transition hover:bg-white/10"
+                className="flex items-center justify-between rounded-xl border border-border/60 bg-card/60 px-4 py-3 text-sm text-foreground/80 transition hover:bg-card/70"
                 onClick={() => setOpen(false)}
               >
                 <span>{action.label}</span>
-                <span className="text-xs text-white/40">Open</span>
+                <span className="text-xs text-foreground/40">Open</span>
               </Link>
             ))
           )}
         </div>
-        <p className="text-xs uppercase tracking-[0.3em] text-white/40">Press ⌘ + K anytime</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-foreground/40">Press ⌘ + K anytime</p>
       </DialogContent>
     </Dialog>
   );

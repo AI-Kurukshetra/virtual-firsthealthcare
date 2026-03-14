@@ -15,3 +15,6 @@
 - Enforced org-level checks in appointment and messaging actions to prevent cross-tenant leakage.
 - Switched to flat ESLint config (`eslint.config.mjs`) for Next 16 compatibility and added a role-relation normalizer to safely read role joins across varying Supabase select shapes.
 - Hardened appointment RLS so providers can only create/update appointments for patients they are already assigned to, relying on patients/admins to create new provider-patient assignments.
+- Standardized theme styling on CSS variables + Tailwind tokens and used `next-themes` class mode for light/dark/system support.
+- Modeled telehealth sessions using `appointment_rooms` with status and timestamps, adding RLS policies instead of introducing a new table.
+- Added invoice + payment RLS to keep billing charts/CRUD scoped to role and organization.

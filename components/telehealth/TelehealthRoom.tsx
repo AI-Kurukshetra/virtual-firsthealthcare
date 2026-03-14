@@ -74,7 +74,7 @@ export function TelehealthRoom() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-      <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-black/40">
+      <div className="relative overflow-hidden rounded-[32px] border border-border/60 bg-black/40">
         <video
           ref={videoRef}
           autoPlay
@@ -83,7 +83,7 @@ export function TelehealthRoom() {
           className="h-full w-full object-cover"
         />
         {!stream && (
-          <div className="absolute inset-0 grid place-items-center text-white/60">
+          <div className="absolute inset-0 grid place-items-center text-foreground/60">
             Unable to access camera/mic
           </div>
         )}
@@ -108,17 +108,17 @@ export function TelehealthRoom() {
       </div>
       <div className="glass noise flex h-full flex-col gap-4 rounded-[32px] p-6">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-white/40">Room status</p>
-          <p className="mt-2 text-lg text-white">Appointment APT-201</p>
-          <p className="text-sm text-white/50">Awaiting patient to join...</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-foreground/40">Room status</p>
+          <p className="mt-2 text-lg text-foreground">Appointment APT-201</p>
+          <p className="text-sm text-foreground/50">Awaiting patient to join...</p>
         </div>
-        <div className="flex-1 space-y-3 overflow-auto rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
+        <div className="flex-1 space-y-3 overflow-auto rounded-2xl border border-border/60 bg-card/60 p-4 text-sm text-foreground/70">
           <p>System: Session opened.</p>
           <p>Assistant: Upload latest labs before consult.</p>
         </div>
         <input
           placeholder="Send a secure message..."
-          className="h-10 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+          className="h-10 rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
         />
       </div>
     </div>

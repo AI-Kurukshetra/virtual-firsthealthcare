@@ -9,7 +9,7 @@ import {
   YAxis
 } from "recharts";
 
-const data = [
+const fallbackData = [
   { name: "Mon", visits: 42 },
   { name: "Tue", visits: 56 },
   { name: "Wed", visits: 49 },
@@ -19,22 +19,26 @@ const data = [
   { name: "Sun", visits: 24 }
 ];
 
-export function AppointmentChart() {
+type AppointmentChartProps = {
+  data?: { name: string; visits: number }[];
+};
+
+export function AppointmentChart({ data = fallbackData }: AppointmentChartProps) {
   return (
     <div className="h-56 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-          <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" />
-          <YAxis stroke="rgba(255,255,255,0.3)" />
+          <XAxis dataKey="name" stroke="hsl(var(--border))" />
+          <YAxis stroke="hsl(var(--border))" />
           <Tooltip
             contentStyle={{
-              background: "rgba(17,17,24,0.9)",
+              background: "hsl(var(--card))",
               borderRadius: 12,
-              border: "1px solid rgba(255,255,255,0.1)",
-              color: "white"
+              border: "1px solid hsl(var(--border))",
+              color: "hsl(var(--foreground))"
             }}
           />
-          <Bar dataKey="visits" fill="#9EE6FF" radius={[8, 8, 0, 0]} />
+          <Bar dataKey="visits" fill="hsl(var(--accent))" radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

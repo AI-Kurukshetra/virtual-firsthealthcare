@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SearchBar } from "@/components/common/SearchBar";
 import { CommandPalette } from "@/components/layout/CommandPalette";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type Notification = {
   id: string;
@@ -73,17 +74,17 @@ export function TopbarClient({
   const displayRole = formatRole(role || "member");
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] border border-white/10 bg-white/5 px-6 py-4 shadow-glass">
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] border border-border/60 bg-card/60 px-6 py-4 shadow-glass">
       <CommandPalette />
-      <div className="flex w-full max-w-xl items-center gap-3 rounded-full border border-white/10 bg-background/40 px-4 py-2 md:w-auto">
-        <Command className="h-4 w-4 text-white/50" />
+      <div className="flex w-full max-w-xl items-center gap-3 rounded-full border border-border/60 bg-background/40 px-4 py-2 md:w-auto">
+        <Command className="h-4 w-4 text-foreground/50" />
         <SearchBar
           placeholder="Search patients, appointments, records..."
           showButton={false}
           className="w-full"
           inputClassName="h-8 border-none bg-transparent px-0 text-sm focus-visible:ring-0"
         />
-        <span className="hidden rounded-full border border-white/10 px-2 py-1 text-[10px] uppercase tracking-[0.3em] text-white/50 md:inline-flex">
+        <span className="hidden rounded-full border border-border/60 px-2 py-1 text-[10px] uppercase tracking-[0.3em] text-foreground/50 md:inline-flex">
           ⌘ K
         </span>
       </div>
@@ -94,16 +95,18 @@ export function TopbarClient({
           Quick Actions
         </Button>
 
+        <ThemeToggle />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/60 bg-card/60 text-foreground/80 transition hover:bg-card/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
               aria-label="Notifications"
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 ? (
-                <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-white">
+                <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-foreground">
                   {unreadCount}
                 </span>
               ) : null}
@@ -113,12 +116,12 @@ export function TopbarClient({
             <DropdownMenuLabel>Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {notifications.length === 0 ? (
-              <div className="px-3 py-4 text-sm text-white/60">No new notifications.</div>
+              <div className="px-3 py-4 text-sm text-foreground/60">No new notifications.</div>
             ) : (
               notifications.map((item) => (
                 <DropdownMenuItem key={item.id} className="flex flex-col items-start gap-1">
-                  <span className="text-sm text-white">{item.title}</span>
-                  {item.body ? <span className="text-xs text-white/50">{item.body}</span> : null}
+                  <span className="text-sm text-foreground">{item.title}</span>
+                  {item.body ? <span className="text-xs text-foreground/50">{item.body}</span> : null}
                 </DropdownMenuItem>
               ))
             )}
@@ -133,24 +136,24 @@ export function TopbarClient({
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 transition duration-300 hover:scale-[1.01] hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+              className="group flex items-center gap-3 rounded-2xl border border-border/60 bg-card/60 px-3 py-2 transition duration-300 hover:scale-[1.01] hover:bg-card/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
               aria-label="Open profile menu"
             >
               <Avatar className="h-10 w-10">
                 {avatarUrl ? <AvatarImage src={avatarUrl} alt={name} /> : null}
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
-              <div className="hidden flex-col text-left text-xs text-white/70 sm:flex">
-                <span className="text-sm font-semibold text-white">{name || email}</span>
+              <div className="hidden flex-col text-left text-xs text-foreground/70 sm:flex">
+                <span className="text-sm font-semibold text-foreground">{name || email}</span>
                 <span>{displayRole}</span>
               </div>
-              <ChevronDown className="hidden h-4 w-4 text-white/50 sm:block" />
+              <ChevronDown className="hidden h-4 w-4 text-foreground/50 sm:block" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
             <DropdownMenuLabel className="flex flex-col gap-1">
-              <span className="text-sm font-semibold text-white">{name || email}</span>
-              <span className="text-xs text-white/50">{email}</span>
+              <span className="text-sm font-semibold text-foreground">{name || email}</span>
+              <span className="text-xs text-foreground/50">{email}</span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

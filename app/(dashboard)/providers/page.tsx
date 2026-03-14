@@ -7,6 +7,7 @@ import { AuthFeedback } from "@/components/forms/AuthFeedback";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { Pagination } from "@/components/common/Pagination";
 import { SearchBar } from "@/components/common/SearchBar";
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { getUserContext } from "@/lib/auth/user-context";
 import { getPaginationParams } from "@/lib/utils/pagination";
 import {
@@ -18,6 +19,20 @@ import {
 export const metadata = {
   title: "Providers | Virtual Health Platform"
 };
+
+const specialtyOptions = [
+  { label: "All", value: "" },
+  { label: "Family Medicine", value: "Family Medicine" },
+  { label: "Internal Medicine", value: "Internal Medicine" },
+  { label: "Cardiology", value: "Cardiology" },
+  { label: "Dermatology", value: "Dermatology" },
+  { label: "Pediatrics", value: "Pediatrics" },
+  { label: "Neurology", value: "Neurology" },
+  { label: "Endocrinology", value: "Endocrinology" },
+  { label: "Orthopedics", value: "Orthopedics" },
+  { label: "Psychiatry", value: "Psychiatry" },
+  { label: "OB-GYN", value: "OB-GYN" }
+];
 
 type ProviderRow = {
   id: string;
@@ -38,11 +53,15 @@ export default async function ProvidersPage({
 
   const role = context.role;
   if (role === "patient") {
-    redirect("/dashboard");
+    redirect("/patient/dashboard");
   }
 
   const supabase = context.supabase;
   const { page, pageSize, query, from, to } = getPaginationParams(searchParams, 6);
+  const rawSpecialty = Array.isArray(searchParams.specialty)
+    ? searchParams.specialty[0]
+    : searchParams.specialty;
+  const specialtyFilter = (rawSpecialty ?? "").trim();
 
   let providers: ProviderRow[] = [];
   let count = 0;
@@ -61,12 +80,18 @@ export default async function ProvidersPage({
       providers = [];
       count = 0;
     } else {
-      const response = await supabase
+      let responseQuery = supabase
         .from("providers")
         .select("id, specialty, license_number, users(full_name, email)", {
           count: "exact"
         })
-        .in("user_id", userIds)
+        .in("user_id", userIds);
+
+      if (specialtyFilter) {
+        responseQuery = responseQuery.eq("specialty", specialtyFilter);
+      }
+
+      const response = await responseQuery
         .range(from, to)
         .order("created_at", { ascending: false })
         .returns<ProviderRow[]>();
@@ -76,11 +101,17 @@ export default async function ProvidersPage({
       error = response.error ? { message: response.error.message } : null;
     }
   } else {
-    const response = await supabase
+    let responseQuery = supabase
       .from("providers")
       .select("id, specialty, license_number, users(full_name, email)", {
         count: "exact"
-      })
+      });
+
+    if (specialtyFilter) {
+      responseQuery = responseQuery.eq("specialty", specialtyFilter);
+    }
+
+    const response = await responseQuery
       .range(from, to)
       .order("created_at", { ascending: false })
       .returns<ProviderRow[]>();
@@ -101,15 +132,18 @@ export default async function ProvidersPage({
             <CardTitle>Provider roster</CardTitle>
             <CardDescription>Licensing, specialties, and workloads.</CardDescription>
           </div>
-          <SearchBar placeholder="Search providers" basePath="/providers" />
+          <div className="flex flex-wrap items-center gap-3">
+            <FilterSelect param="specialty" label="Specialty" options={specialtyOptions} basePath="/providers" />
+            <SearchBar placeholder="Search providers" basePath="/providers" />
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {canCreate ? (
             <ActionForm
               action={createProviderAction}
-              className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
+              className="grid gap-3 rounded-2xl border border-border/60 bg-card/60 p-4"
             >
-              <p className="text-xs uppercase tracking-[0.3em] text-white/50">Invite provider</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-foreground/50">Invite provider</p>
               <div className="grid gap-3 md:grid-cols-2">
                 <Input name="fullName" placeholder="Full name" />
                 <Input name="email" type="email" placeholder="Email" />
@@ -127,14 +161,14 @@ export default async function ProvidersPage({
             {(providers ?? []).map((provider) => (
               <div
                 key={provider.id}
-                className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                className="rounded-2xl border border-border/60 bg-card/60 p-4"
               >
                 <div className="flex flex-col gap-1">
-                  <p className="text-lg font-semibold text-white">
+                  <p className="text-lg font-semibold text-foreground">
                     {provider.users?.full_name ?? "Unnamed provider"}
                   </p>
-                  <p className="text-sm text-white/60">{provider.users?.email ?? ""}</p>
-                  <p className="text-xs text-white/50">
+                  <p className="text-sm text-foreground/60">{provider.users?.email ?? ""}</p>
+                  <p className="text-xs text-foreground/50">
                     {provider.specialty || "General"}
                   </p>
                 </div>

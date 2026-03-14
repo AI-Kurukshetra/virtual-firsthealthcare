@@ -11,11 +11,39 @@ import {
 
 const DEFAULT_BUCKET = "documents";
 
+async function notifyUsers({
+  organizationId,
+  userIds,
+  title,
+  body,
+  type
+}: {
+  organizationId: string;
+  userIds: string[];
+  title: string;
+  body?: string | null;
+  type?: string | null;
+}) {
+  if (userIds.length === 0) return;
+  const adminClient = createSupabaseAdminClient();
+  await adminClient.from("notifications").insert(
+    userIds.map((userId) => ({
+      organization_id: organizationId,
+      user_id: userId,
+      title,
+      body: body ?? null,
+      type: type ?? "info",
+      is_read: false
+    }))
+  );
+}
+
 function parseDocumentCreate(formData: FormData): DocumentCreateInput {
   return {
     title: String(formData.get("title") ?? ""),
     patientId: String(formData.get("patientId") ?? ""),
-    bucket: (String(formData.get("bucket") ?? "").trim() || undefined) as DocumentCreateInput["bucket"]
+    bucket: (String(formData.get("bucket") ?? "").trim() || undefined) as DocumentCreateInput["bucket"],
+    documentType: String(formData.get("documentType") ?? "").trim() || undefined
   };
 }
 
@@ -24,7 +52,8 @@ function parseDocumentUpdate(formData: FormData): DocumentUpdateInput {
     id: String(formData.get("id") ?? ""),
     title: String(formData.get("title") ?? ""),
     patientId: String(formData.get("patientId") ?? ""),
-    bucket: (String(formData.get("bucket") ?? "").trim() || undefined) as DocumentUpdateInput["bucket"]
+    bucket: (String(formData.get("bucket") ?? "").trim() || undefined) as DocumentUpdateInput["bucket"],
+    documentType: String(formData.get("documentType") ?? "").trim() || undefined
   };
 }
 
@@ -57,7 +86,8 @@ export async function createDocumentAction(formData: FormData) {
     .insert({
       organization_id: context.organizationId,
       patient_id: patientId,
-      title: parsed.data.title
+      title: parsed.data.title,
+      document_type: parsed.data.documentType ?? null
     })
     .select("id")
     .single();
@@ -101,6 +131,41 @@ export async function createDocumentAction(formData: FormData) {
     }
   }
 
+  const adminClient = createSupabaseAdminClient();
+  const { data: patientRow } = await adminClient
+    .from("patients")
+    .select("user_id")
+    .eq("id", patientId)
+    .maybeSingle();
+
+  if (context.role === "patient") {
+    const { data: providerRows } = await adminClient
+      .from("appointments")
+      .select("providers(user_id)")
+      .eq("patient_id", patientId)
+      .returns<{ providers: { user_id: string | null } | null }[]>();
+
+    const providerUserIds = (providerRows ?? [])
+      .map((row) => row.providers?.user_id)
+      .filter(Boolean) as string[];
+
+    await notifyUsers({
+      organizationId: context.organizationId,
+      userIds: providerUserIds,
+      title: "New document uploaded",
+      body: parsed.data.title,
+      type: "document"
+    });
+  } else if (patientRow?.user_id) {
+    await notifyUsers({
+      organizationId: context.organizationId,
+      userIds: [patientRow.user_id],
+      title: "New document available",
+      body: parsed.data.title,
+      type: "document"
+    });
+  }
+
   return { success: "Document created." };
 }
 
@@ -124,7 +189,8 @@ export async function updateDocumentAction(formData: FormData) {
     .from("documents")
     .update({
       title: parsed.data.title,
-      patient_id: patientId
+      patient_id: patientId,
+      document_type: parsed.data.documentType ?? null
     })
     .eq("id", parsed.data.id);
 

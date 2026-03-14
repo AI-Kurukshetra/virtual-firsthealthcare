@@ -44,30 +44,30 @@ export function AuthRegisterForm() {
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="space-y-2">
-        <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+        <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
           Full name
         </label>
         <Input placeholder="Jane Smith" {...form.register("fullName")} />
       </div>
       <div className="space-y-2">
-        <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+        <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
           Work email
         </label>
         <Input type="email" placeholder="you@health.org" {...form.register("email")} />
       </div>
       <div className="space-y-2">
-        <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+        <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
           Password
         </label>
         <Input type="password" placeholder="••••••••" {...form.register("password")} />
       </div>
       <div className="space-y-2">
-        <label className="text-xs uppercase tracking-[0.3em] text-white/50">
+        <label className="text-xs uppercase tracking-[0.3em] text-foreground/50">
           Role
         </label>
         <select
           {...form.register("role")}
-          className="h-10 w-full rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white"
+          className="h-10 w-full rounded-2xl border border-border/60 bg-card/60 px-4 text-sm text-foreground"
         >
           <option value="patient">Patient</option>
           <option value="provider">Provider</option>
@@ -79,9 +79,9 @@ export function AuthRegisterForm() {
       <Button className="w-full" type="submit" disabled={isPending}>
         {isPending ? "Creating account..." : "Create account"}
       </Button>
-      <p className="text-xs text-white/60">
+      <p className="text-xs text-foreground/60">
         Already have an account?{" "}
-        <Link className="text-accent hover:text-white" href="/login">
+        <Link className="text-accent hover:text-foreground" href="/login">
           Sign in
         </Link>
       </p>

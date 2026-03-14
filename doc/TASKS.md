@@ -32,3 +32,5 @@
 - [x] 2026-03-14 16:51 Replace module and global search with client-side navigation
 - [x] 2026-03-14 17:01 Add Supabase seed script with realistic relational data
 - [x] 2026-03-14 17:06 Expand schema to support full seed requirements
+- [x] 2026-03-14 17:23 Add full light/dark/system theming with next-themes, tokenized colors, and dashboard toggle
+- [x] 2026-03-14 17:55 Production hardening audit: users/billing/telehealth/reports modules, filters, notifications, charts, and reset password

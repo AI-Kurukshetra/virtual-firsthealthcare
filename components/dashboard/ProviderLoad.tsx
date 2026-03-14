@@ -30,12 +30,12 @@ export function ProviderLoad() {
           <div key={provider.name} className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <div>
-                <p className="font-semibold text-white">{provider.name}</p>
-                <p className="text-xs text-white/50">{provider.specialty}</p>
+                <p className="font-semibold text-foreground">{provider.name}</p>
+                <p className="text-xs text-foreground/50">{provider.specialty}</p>
               </div>
-              <p className="text-white/70">{provider.load} visits</p>
+              <p className="text-foreground/70">{provider.load} visits</p>
             </div>
-            <div className="h-2 rounded-full bg-white/10">
+            <div className="h-2 rounded-full bg-card/70">
               <div
                 className="h-2 rounded-full bg-gradient-to-r from-primary to-accent"
                 style={{ width: `${Math.min(provider.load * 4, 100)}%` }}
